@@ -11,9 +11,9 @@
             "name": "Debug Tests",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/tests/run_tests",
+            "program": "${workspaceFolder}/build/test/test",
             "args": [],
-            "cwd": "${workspaceFolder}/tests",
+            "cwd": "${workspaceFolder}/test",
             "preLaunchTask": "Build Tests"
         }
     ]

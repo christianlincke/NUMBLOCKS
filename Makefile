@@ -75,8 +75,12 @@ cli:
 
 test:
 	mkdir -p build/test
-	gcc $(CORESOURCES) $(TESTSOURCES) -Isrc -o build/test/$(PROJECTNAME)
-	./build/test/$(PROJECTNAME)
+	gcc -g -O0 $(CORESOURCES) $(TESTSOURCES) -Isrc -o build/test/test
+
+testrun:
+	mkdir -p build/test
+	gcc -g -O0 $(CORESOURCES) $(TESTSOURCES) -Isrc -o build/test/test
+	./build/test/test
 
 clean:
 	rm -rf build

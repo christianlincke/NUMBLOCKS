@@ -20,6 +20,12 @@
             "problemMatcher": "$gcc"
         },
         {
+            "label": "Build Tests and Run",
+            "type": "shell",
+            "command": "make testrun",
+            "problemMatcher": "$gcc"
+        },
+        {
             "label": "Build CLI",
             "type": "shell",
             "command": "make cli",
