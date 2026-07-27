@@ -130,7 +130,7 @@ uint8_t grid_pushRight(Grid *grid)
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
             }
-            else if (grid->cells[y][x + 1] != 0 && grid->cells[y][x + 1] == grid->cells[y][x] && !grid->hasMerged[y][x + 1])
+            else if (grid->cells[y][x + 1] != 0 && grid->cells[y][x + 1] == grid->cells[y][x] && !grid->hasMerged[y][x + 1] && !grid->hasMerged[y][x])
             {
                 // same value, double upper cell
                 grid->cells[y][x + 1] *= 2;
@@ -150,7 +150,7 @@ uint8_t grid_pushRight(Grid *grid)
 void grid_push(Grid *grid, Direction dir)
 {
     grid_resetMerge(grid);
-    
+
     switch (dir)
     {
     case UP:

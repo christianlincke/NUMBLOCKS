@@ -3,7 +3,7 @@ UTEST_MAIN()
 
 #include "core/grid.h"
 
-UTEST(grid, grid_init_test)
+UTEST(grid, initTest)
 {
     Grid grid;
     grid_init(&grid);
@@ -16,7 +16,7 @@ UTEST(grid, grid_init_test)
     }
 }
 
-UTEST(grid, grid_push_Single_test)
+UTEST(grid, pushSingleTest)
 {
     Grid grid;
     grid_init(&grid);
@@ -38,7 +38,7 @@ UTEST(grid, grid_push_Single_test)
     ASSERT_EQ(grid.cells[3][0], 1);
 }
 
-UTEST(grid, grid_push_two_test)
+UTEST(grid, pushTwoTest)
 {
     Grid grid;
     grid_init(&grid);
@@ -61,5 +61,38 @@ UTEST(grid, grid_push_two_test)
     ASSERT_EQ(grid.cells[0][3], 0);
     ASSERT_EQ(grid.cells[0][2], 0);
 }
+
+UTEST(grid, pushThreeTest)
+{
+    Grid grid;
+    grid_init(&grid);
+    grid.cells[0][0] = 1;
+    grid.cells[0][1] = 1;
+    grid.cells[0][2] = 2;
+    grid.cells[0][3] = 0;
+    
+    grid_push(&grid, RIGHT);
+    ASSERT_EQ(grid.cells[0][0], 0);
+    ASSERT_EQ(grid.cells[0][1], 0);
+    ASSERT_EQ(grid.cells[0][2], 2);
+    ASSERT_EQ(grid.cells[0][3], 2);
+}
+
+UTEST(grid, push_four_test)
+{
+    Grid grid;
+    grid_init(&grid);
+    grid.cells[0][0] = 1;
+    grid.cells[0][1] = 1;
+    grid.cells[0][2] = 1;
+    grid.cells[0][3] = 1;
+    
+    grid_push(&grid, RIGHT);
+    ASSERT_EQ(grid.cells[0][0], 0);
+    ASSERT_EQ(grid.cells[0][1], 0);
+    ASSERT_EQ(grid.cells[0][2], 2);
+    ASSERT_EQ(grid.cells[0][3], 2);
+}
+
 
 
