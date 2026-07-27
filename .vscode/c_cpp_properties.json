@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "GBDK",
+            "includePath": [
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/../gbdk/include/**"
+            ],
+            "defines": [
+                "__PORT_sm83",
+                "__TARGET_gb"
+            ]
+        }
+    ],
+    "version": 4
+}

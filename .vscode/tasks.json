@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build ROM debug",
+            "type": "shell",
+            "command": "make rom GBDK_DEBUG=ON",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build ROM release",
+            "type": "shell",
+            "command": "make rom",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build Tests",
+            "type": "shell",
+            "command": "make test",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build CLI",
+            "type": "shell",
+            "command": "make cli",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make clean"
+        }
+    ]
+}
