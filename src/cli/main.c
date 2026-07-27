@@ -1,10 +1,12 @@
 #include <stdio.h>
 
-#include "core/add.h"
+#include "core/grid.h"
 
 int main(int argc, char *argv[])
 {
-    int result = add(2, 3);
-    printf("The sum of 2 and 3 is: %d\n", result);
+    for (int i = 5; i >= 0; i--) {
+        printf("%d\n", i);
+    }
+
     return 0;
 }
