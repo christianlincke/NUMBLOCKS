@@ -16,6 +16,4 @@ typedef struct {
 
 void grid_init(Grid *grid);
 void grid_push(Grid *grid, Direction dir);
-
-
-
+void grid_newCell(Grid *grid);

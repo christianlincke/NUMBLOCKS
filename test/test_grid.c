@@ -44,11 +44,11 @@ UTEST(grid, pushTwoTest)
     grid_init(&grid);
     grid.cells[3][0] = 1;
     grid.cells[0][0] = 1;
-    
+
     grid_push(&grid, UP);
     ASSERT_EQ(grid.cells[3][0], 0);
     ASSERT_EQ(grid.cells[0][0], 2);
-    
+
     grid.cells[0][3] = 1;
     grid_push(&grid, RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
@@ -70,7 +70,7 @@ UTEST(grid, pushThreeTest)
     grid.cells[0][1] = 1;
     grid.cells[0][2] = 2;
     grid.cells[0][3] = 0;
-    
+
     grid_push(&grid, RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][1], 0);
@@ -78,7 +78,7 @@ UTEST(grid, pushThreeTest)
     ASSERT_EQ(grid.cells[0][3], 2);
 }
 
-UTEST(grid, push_four_test)
+UTEST(grid, pushFourTest)
 {
     Grid grid;
     grid_init(&grid);
@@ -86,7 +86,7 @@ UTEST(grid, push_four_test)
     grid.cells[0][1] = 1;
     grid.cells[0][2] = 1;
     grid.cells[0][3] = 1;
-    
+
     grid_push(&grid, RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][1], 0);
@@ -94,5 +94,32 @@ UTEST(grid, push_four_test)
     ASSERT_EQ(grid.cells[0][3], 2);
 }
 
+UTEST(grid, newCellTest)
+{
+    Grid grid;
+    grid_init(&grid);
+    grid_newCell(&grid);
 
+    uint8_t num_changed = 0;
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            if(grid.cells[y][x] != 0) {
+                num_changed += 1;
+            }
+        }
+    }
+    ASSERT_EQ(num_changed, 1);
 
+    grid_newCell(&grid);
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            if(grid.cells[y][x] != 0) {
+                num_changed += 2;
+            }
+        }
+    }
+}

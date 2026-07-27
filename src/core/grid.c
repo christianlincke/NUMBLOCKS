@@ -1,5 +1,7 @@
 #include "grid.h"
 
+#include <stdlib.h>
+
 void grid_init(Grid *grid)
 {
     for (int y = 0; y < 4; y++)
@@ -173,5 +175,27 @@ void grid_push(Grid *grid, Direction dir)
         {
         }
         break;
+    }
+}
+
+/**
+ * @brief adds an randomly selected empty sell with a random value (2 or 4)
+ *
+ * @param grid the grid
+ */
+void grid_newCell(Grid *grid)
+{
+    uint8_t busy = 1;
+    uint8_t randVals[] = {2, 4};
+
+    while (busy)
+    {
+        uint8_t x = rand() % 4;
+        uint8_t y = rand() % 4;
+        if (grid->cells[y][x] == 0)
+        {
+            grid->cells[y][x] = randVals[(rand() % 2)];
+            busy = 0;
+        }
     }
 }
