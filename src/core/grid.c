@@ -9,10 +9,10 @@ typedef struct
 } DirectionVector;
 
 static const DirectionVector directions[] = {
-    [GRID_UP] = {0, -1},
-    [GRID_DOWN] = {0, 1},
-    [GRID_LEFT] = {-1, 0},
-    [GRID_RIGHT] = {1, 0}};
+    [MOVE_UP] = {0, -1},
+    [MOVE_DOWN] = {0, 1},
+    [MOVE_LEFT] = {-1, 0},
+    [MOVE_RIGHT] = {1, 0}};
 
 void grid_init(Grid *grid)
 {
@@ -21,23 +21,34 @@ void grid_init(Grid *grid)
         for (int x = 0; x < GRID_SIZE; x++)
         {
             grid->cells[y][x] = 0;
-            grid->hasMerged[y][x] = 0;
+            grid->aux[y][x] = 0;
         }
     }
 }
 
-void grid_resetMerge(Grid *grid)
-{
+/**
+ * @brief reset the aux flag
+ * 
+ * @param grid 
+ */
+void grid_resetAux(Grid *grid) {
     for (int y = 0; y < GRID_SIZE; y++)
     {
         for (int x = 0; x < GRID_SIZE; x++)
         {
-            grid->hasMerged[y][x] = 0;
+            grid->aux[y][x] = 0;
         }
     }
 }
 
-uint8_t grid_pushUp(Grid *grid, PushDirection dir)
+
+void grid_prepare(Grid *grid)
+{
+    grid_resetAux(grid);
+}
+
+
+MoveDirection grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
 {
     // get direction Vectors (in which direction should each cell look at its neighbour?)
     int8_t dx = directions[dir].dx;
@@ -52,7 +63,7 @@ uint8_t grid_pushUp(Grid *grid, PushDirection dir)
     int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE : GRID_SIZE; // not actually the end, just the point we dont want to reach
     int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
 
-    uint8_t changeFlag = 0;
+    uint8_t moved = 0;
 
     int y = startY;
     while (y != endY)
@@ -67,50 +78,83 @@ uint8_t grid_pushUp(Grid *grid, PushDirection dir)
             
             if (grid->cells[ny][nx] == 0 && grid->cells[y][x] != 0)
             {
-                // if neighbouring cell is empty and this cell isnt, move this one into neighbour
+                frame->value[y][x] = grid->cells[y][x];
+                frame->dx[y][x] = dx;
+                frame->dy[y][x] = dy;
+                frame->merged[ny][nx] = 0;
+
                 grid->cells[ny][nx] = grid->cells[y][x];
+                grid->aux[ny][nx] = grid->aux[y][x];
+
                 grid->cells[y][x] = 0;
-                changeFlag = 1;
+                grid->aux[y][x] = 0;
+
+                moved = 1;
             }
-            else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->hasMerged[ny][nx] && !grid->hasMerged[y][x])
+            else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->aux[ny][nx] && !grid->aux[y][x])
             {
                 // if the neighbouring cell isnt empty AND neighbouring cell is same value as this cell
                 // AND none of the cell have already merged this turn, neighbour cell += 1
+                frame->value[y][x] = grid->cells[y][x];
+                frame->dx[y][x] = dx;
+                frame->dy[y][x] = dy;
+                frame->merged[ny][nx] = 1;
+                
                 grid->cells[ny][nx] += 1;
-                grid->hasMerged[ny][nx] = 1;
+                grid->aux[ny][nx] = 1;
                 grid->cells[y][x] = 0;
-                changeFlag = 1;
+
+                moved = 1;
             }
             x += stepX;
         }
         y += stepY;
     }
-    return changeFlag;
-}
-
-void grid_push(Grid *grid, PushDirection dir)
-{
-    grid_resetMerge(grid);
-
-    // TODO move the actual code here maybe
-    while (grid_pushUp(grid, dir))
-    {
+    if (moved) {
+        return dir;
     }
+    return MOVE_NONE;
 }
 
 /**
- * @brief adds an randomly selected empty sell with a random value (2 or 4)
- *
- * @param grid the grid
+ * @brief sum the cells
+ * 
+ * @param grid 
+ * @return uint8_t 
  */
+uint16_t grid_sumCells(Grid *grid) {
+    uint16_t sum = 0;
+    for (uint8_t y = 0; y < GRID_SIZE; y++) {
+        for (uint8_t x = 0; x < GRID_SIZE; x++) {
+            sum += grid->cells[y][x];
+        }
+    }
+    return sum;
+}
+
+/**
+ * @brief sum the aux cells
+ * 
+ * @param grid 
+ * @return uint8_t 
+ */
+uint8_t grid_sumAux(Grid *grid) {
+    uint8_t sum = 0;
+    for (uint8_t y = 0; y < GRID_SIZE; y++) {
+        for (uint8_t x = 0; x < GRID_SIZE; x++) {
+            sum += grid->aux[y][x];
+        }
+    }
+    return sum;
+}
+
+
 void grid_newCell(Grid *grid)
-{
-    // TODO this should be done a different way, not sure how. maybe generate rnd starting point and then iterate systematically
-    uint8_t busy = 1;
+{   
+    // reset the grid.aux[]
+    grid_resetAux(grid);
 
-    uint8_t attempts = 0;
-
-    while (busy && attempts < 100)
+    while (grid_sumAux(grid) < (GRID_SIZE * GRID_SIZE))
     {
         uint8_t x = (uint8_t)(random_byte() % GRID_SIZE);
         uint8_t y = (uint8_t)(random_byte() % GRID_SIZE);
@@ -118,19 +162,14 @@ void grid_newCell(Grid *grid)
         if (grid->cells[y][x] == 0)
         {
             grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
-            busy = 0;
+            return;
         }
-
-        attempts++;
+        grid->aux[y][x] = 1;
     }
+    grid_resetAux(grid);
 }
 
-/**
- * @brief dump grid content into textbuffer
- *
- * @param grid
- * @param buffer
- */
+
 void grid_dump(Grid *grid, TextBuffer *buffer)
 {
     uint8_t bStartX = (uint8_t)(20 - GRID_SIZE) / 2;

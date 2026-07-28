@@ -9,6 +9,8 @@ int main(int argc, char *argv[])
     TextBuffer buffer;
     tb_init(&buffer);
 
+    MoveFrame mf;
+
     Grid grid;
     grid_init(&grid);
     grid_newCell(&grid);
@@ -21,19 +23,19 @@ int main(int argc, char *argv[])
         switch (ch)
         {
         case 'w':
-            grid_push(&grid, GRID_UP);
+            while(grid_move(&grid, &mf, MOVE_UP)){};
             grid_newCell(&grid);
             break;
         case 'a':
-            grid_push(&grid, GRID_LEFT);
+            while(grid_move(&grid, &mf, MOVE_LEFT)){};
             grid_newCell(&grid);
             break;
         case 's':
-            grid_push(&grid, GRID_DOWN);
+            while(grid_move(&grid, &mf, MOVE_DOWN)){};
             grid_newCell(&grid);
             break;
         case 'd':
-            grid_push(&grid, GRID_RIGHT);
+            while(grid_move(&grid, &mf, MOVE_RIGHT)){};
             grid_newCell(&grid);
             break;
         case 'q':

@@ -50,6 +50,8 @@ void main(void)
     TextBuffer buffer;
     tb_init(&buffer);
 
+    MoveFrame mFrame;
+
     Grid grid;
     grid_init(&grid);
     grid_newCell(&grid);
@@ -61,7 +63,10 @@ void main(void)
 
     uint8_t j;
     uint8_t jMem = 0;
-    Direction dir;
+    MoveDirection dir;
+
+    MoveDirection pushActive = 0;
+    uint8_t lastPushActive = 0;
 
     while (1)
     {
@@ -70,27 +75,43 @@ void main(void)
 
         if (j & J_UP)
         {
-            dir = GRID_UP;
+            dir = MOVE_UP;
+            grid_prepare(&grid);
+            pushActive = MOVE_UP;
         }
         else if (j & J_DOWN)
         {
-            dir = GRID_DOWN;
+            dir = MOVE_DOWN;
+            grid_prepare(&grid);
+            pushActive = MOVE_DOWN;
         }
         else if (j & J_LEFT)
         {
-            dir = GRID_LEFT;
+            dir = MOVE_LEFT;
+            grid_prepare(&grid);
+            pushActive = MOVE_LEFT;
         }
         else if (j & J_RIGHT)
         {
-            dir = GRID_RIGHT;
+            dir = MOVE_RIGHT;
+            grid_prepare(&grid);
+            pushActive = MOVE_RIGHT;
         }
 
-        if (j)
+        if (pushActive != MOVE_NONE)
         {
-            grid_push(&grid, dir);
+            pushActive = grid_move(&grid, &mFrame, dir);
+
+            grid_dump(&grid, &buffer);
+        }
+
+        if (pushActive == MOVE_NONE && lastPushActive != MOVE_NONE)
+        {
             grid_newCell(&grid);
             grid_dump(&grid, &buffer);
         }
+
+        lastPushActive = pushActive;
 
         DrawText(&buffer);
         vsync();
