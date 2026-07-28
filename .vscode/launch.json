@@ -9,7 +9,7 @@
             "port": 58870,
             "stopOnEntry": true,
             "preLaunchTask": "Build ROM debug",
-            "additionalSrcFolders": "${workspaceFolder}/src/gb",
+            "additionalSrcFolders": "${workspaceFolder}/src/gb;${workspaceFolder}/src/core"
         },
         {
             "name": "Debug Tests",
