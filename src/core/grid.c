@@ -1,6 +1,6 @@
 #include "grid.h"
 
-#include <stdlib.h>
+#include "random_byte.h"
 
 void grid_init(Grid *grid)
 {
@@ -12,7 +12,7 @@ void grid_init(Grid *grid)
             grid->hasMerged[y][x] = 0;
         }
     }
-};
+}
 
 void grid_resetMerge(Grid *grid)
 {
@@ -39,10 +39,10 @@ uint8_t grid_pushUp(Grid *grid)
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
             }
-            else if (grid->cells[y - 1][x] != 0 && grid->cells[y - 1][x] == grid->cells[y][x] && !grid->hasMerged[y - 1][x])
+            else if (grid->cells[y - 1][x] != 0 && grid->cells[y - 1][x] == grid->cells[y][x] && !grid->hasMerged[y - 1][x] && !grid->hasMerged[y][x])
             {
                 // same value, double upper cell
-                grid->cells[y - 1][x] *= 2;
+                grid->cells[y - 1][x] += 1;
                 grid->hasMerged[y - 1][x] = 1;
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
@@ -70,10 +70,10 @@ uint8_t grid_pushDown(Grid *grid)
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
             }
-            else if (grid->cells[y + 1][x] != 0 && grid->cells[y + 1][x] == grid->cells[y][x] && !grid->hasMerged[y + 1][x])
+            else if (grid->cells[y + 1][x] != 0 && grid->cells[y + 1][x] == grid->cells[y][x] && !grid->hasMerged[y + 1][x] && !grid->hasMerged[y][x])
             {
                 // same value, double upper cell
-                grid->cells[y + 1][x] *= 2;
+                grid->cells[y + 1][x] += 1;
                 grid->hasMerged[y + 1][x] = 1;
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
@@ -101,10 +101,10 @@ uint8_t grid_pushLeft(Grid *grid)
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
             }
-            else if (grid->cells[y][x - 1] != 0 && grid->cells[y][x - 1] == grid->cells[y][x] && !grid->hasMerged[y][x - 1])
+            else if (grid->cells[y][x - 1] != 0 && grid->cells[y][x - 1] == grid->cells[y][x] && !grid->hasMerged[y][x - 1] && !grid->hasMerged[y][x])
             {
                 // same value, double upper cell
-                grid->cells[y][x - 1] *= 2;
+                grid->cells[y][x - 1] += 1;
                 grid->hasMerged[y][x - 1] = 1;
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
@@ -135,7 +135,7 @@ uint8_t grid_pushRight(Grid *grid)
             else if (grid->cells[y][x + 1] != 0 && grid->cells[y][x + 1] == grid->cells[y][x] && !grid->hasMerged[y][x + 1] && !grid->hasMerged[y][x])
             {
                 // same value, double upper cell
-                grid->cells[y][x + 1] *= 2;
+                grid->cells[y][x + 1] += 1;
                 grid->hasMerged[y][x + 1] = 1;
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
@@ -155,22 +155,22 @@ void grid_push(Grid *grid, Direction dir)
 
     switch (dir)
     {
-    case UP:
+    case GRID_UP:
         while (grid_pushUp(grid))
         {
         }
         break;
-    case DOWN:
+    case GRID_DOWN:
         while (grid_pushDown(grid))
         {
         }
         break;
-    case LEFT:
+    case GRID_LEFT:
         while (grid_pushLeft(grid))
         {
         }
         break;
-    case RIGHT:
+    case GRID_RIGHT:
         while (grid_pushRight(grid))
         {
         }
@@ -186,16 +186,37 @@ void grid_push(Grid *grid, Direction dir)
 void grid_newCell(Grid *grid)
 {
     uint8_t busy = 1;
-    uint8_t randVals[] = {2, 4};
 
-    while (busy)
+    uint8_t attempts = 0;
+
+    while (busy && attempts < 100)
     {
-        uint8_t x = rand() % 4;
-        uint8_t y = rand() % 4;
+        uint8_t x = (uint8_t)(random_byte() % 4);
+        uint8_t y = (uint8_t)(random_byte() % 4);
+
         if (grid->cells[y][x] == 0)
         {
-            grid->cells[y][x] = randVals[(rand() % 2)];
+            grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
             busy = 0;
+        }
+
+        attempts++;
+    }
+}
+
+/**
+ * @brief dump grid content into textbuffer
+ *
+ * @param grid
+ * @param buffer
+ */
+void grid_dump(Grid *grid, TextBuffer *buffer)
+{
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            buffer->text[y + 7][x + 8] = '0' + grid->cells[y][x];
         }
     }
 }
