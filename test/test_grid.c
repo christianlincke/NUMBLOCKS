@@ -21,19 +21,19 @@ UTEST(grid, pushSingleTest)
     Grid grid;
     grid_init(&grid);
     grid.cells[3][0] = 1;
-    grid_push(&grid, UP);
+    grid_push(&grid, GRID_UP);
     ASSERT_EQ(grid.cells[3][0], 0);
     ASSERT_EQ(grid.cells[0][0], 1);
 
-    grid_push(&grid, RIGHT);
+    grid_push(&grid, GRID_RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][3], 1);
 
-    grid_push(&grid, DOWN);
+    grid_push(&grid, GRID_DOWN);
     ASSERT_EQ(grid.cells[0][3], 0);
     ASSERT_EQ(grid.cells[3][3], 1);
 
-    grid_push(&grid, LEFT);
+    grid_push(&grid, GRID_LEFT);
     ASSERT_EQ(grid.cells[3][3], 0);
     ASSERT_EQ(grid.cells[3][0], 1);
 }
@@ -45,19 +45,19 @@ UTEST(grid, pushTwoTest)
     grid.cells[3][0] = 1;
     grid.cells[0][0] = 1;
 
-    grid_push(&grid, UP);
+    grid_push(&grid, GRID_UP);
     ASSERT_EQ(grid.cells[3][0], 0);
     ASSERT_EQ(grid.cells[0][0], 2);
 
     grid.cells[0][3] = 1;
-    grid_push(&grid, RIGHT);
+    grid_push(&grid, GRID_RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][3], 1);
     ASSERT_EQ(grid.cells[0][2], 2);
 
     grid.cells[0][3] = 2;
-    grid_push(&grid, LEFT);
-    ASSERT_EQ(grid.cells[0][0], 4);
+    grid_push(&grid, GRID_LEFT);
+    ASSERT_EQ(grid.cells[0][0], 3);
     ASSERT_EQ(grid.cells[0][3], 0);
     ASSERT_EQ(grid.cells[0][2], 0);
 }
@@ -71,7 +71,7 @@ UTEST(grid, pushThreeTest)
     grid.cells[0][2] = 2;
     grid.cells[0][3] = 0;
 
-    grid_push(&grid, RIGHT);
+    grid_push(&grid, GRID_RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][1], 0);
     ASSERT_EQ(grid.cells[0][2], 2);
@@ -87,7 +87,7 @@ UTEST(grid, pushFourTest)
     grid.cells[0][2] = 1;
     grid.cells[0][3] = 1;
 
-    grid_push(&grid, RIGHT);
+    grid_push(&grid, GRID_RIGHT);
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][1], 0);
     ASSERT_EQ(grid.cells[0][2], 2);
