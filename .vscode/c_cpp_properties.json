@@ -4,6 +4,7 @@
             "name": "GBDK",
             "includePath": [
                 "${workspaceFolder}/src/**",
+                "${workspaceFolder}/res",
                 "${workspaceFolder}/../gbdk/include/**"
             ],
             "defines": [

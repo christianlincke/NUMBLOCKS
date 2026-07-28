@@ -4,7 +4,7 @@
         {
             "label": "Build ROM debug",
             "type": "shell",
-            "command": "make rom GBDK_DEBUG=ON",
+            "command": "make clean && make rom GBDK_DEBUG=ON",
             "problemMatcher": "$gcc"
         },
         {

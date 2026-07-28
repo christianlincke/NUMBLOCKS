@@ -12,14 +12,14 @@ endif
 LCC = $(GBDK_HOME)/bin/lcc
 
 # include headers in /src
-LCCFLAGS += -Isrc
+LCCFLAGS += -Isrc -Ires
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
 	LCCFLAGS += -debug -v
 endif
 
-PROJECTNAME    = TEMPLATE
+PROJECTNAME    = 2048
 
 # source directories
 COREDIR      := src/core
@@ -71,7 +71,7 @@ $(GBOBJDIR)/%.o: %.c
 
 cli:
 	mkdir -p build/cli
-	gcc $(CORESOURCES) $(CLISOURCES) -Isrc -o build/cli/$(PROJECTNAME)
+	gcc -g -O0 $(CORESOURCES) $(CLISOURCES) -Isrc -o build/cli/$(PROJECTNAME)
 
 test:
 	mkdir -p build/test
