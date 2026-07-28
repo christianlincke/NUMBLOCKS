@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#define GRID_SIZE 4
+
 // TODO keep track if a puch in a direction actually did, new cells should only be generated if the grid has changed
 
 typedef enum {
@@ -14,8 +16,8 @@ typedef enum {
 } PushDirection;
 
 typedef struct {
-    uint8_t cells[4][4];
-    uint8_t hasMerged[4][4];
+    uint8_t cells[GRID_SIZE][GRID_SIZE];
+    uint8_t hasMerged[GRID_SIZE][GRID_SIZE];
 } Grid;
 
 void grid_init(Grid *grid);
