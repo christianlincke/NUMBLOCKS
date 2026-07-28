@@ -44,19 +44,13 @@ uint8_t grid_pushUp(Grid *grid, PushDirection dir)
     int8_t dy = directions[dir].dy;
 
     // calc start and end positions and step size for each direction
-    uint8_t startX = dx > 0 ? 2 : dx < 0 ? 1
-                                         : 0;
-    int8_t endX = dx > 0 ? -1 : dx < 0 ? GRID_SIZE
-                                       : GRID_SIZE; // not actually the end, just the point we dont want to reach
-    int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1
-                                        : 1;
+    uint8_t startX = dx > 0 ? 2 : dx < 0 ? 1 : 0;
+    int8_t endX = dx > 0 ? -1 : dx < 0 ? GRID_SIZE : GRID_SIZE; // not actually the end, just the point we dont want to reach
+    int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1 : 1;
 
-    uint8_t startY = dy > 0 ? 2 : dy < 0 ? 1
-                                         : 0;
-    int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE
-                                       : GRID_SIZE; // not actually the end, just the point we dont want to reach
-    int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1
-                                        : 1;
+    uint8_t startY = dy > 0 ? 2 : dy < 0 ? 1 : 0;
+    int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE : GRID_SIZE; // not actually the end, just the point we dont want to reach
+    int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
 
     uint8_t changeFlag = 0;
 
@@ -66,18 +60,22 @@ uint8_t grid_pushUp(Grid *grid, PushDirection dir)
         int x = startX;
         while (x != endX)
         {
+            // call neighbouring cell coordinates
             uint8_t nx = x + dx;
             uint8_t ny = y + dy;
+
+            
             if (grid->cells[ny][nx] == 0 && grid->cells[y][x] != 0)
             {
-                // move up by one cell
+                // if neighbouring cell is empty and this cell isnt, move this one into neighbour
                 grid->cells[ny][nx] = grid->cells[y][x];
                 grid->cells[y][x] = 0;
                 changeFlag = 1;
             }
             else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->hasMerged[ny][nx] && !grid->hasMerged[y][x])
             {
-                // same value, neighbour cell += 1
+                // if the neighbouring cell isnt empty AND neighbouring cell is same value as this cell
+                // AND none of the cell have already merged this turn, neighbour cell += 1
                 grid->cells[ny][nx] += 1;
                 grid->hasMerged[ny][nx] = 1;
                 grid->cells[y][x] = 0;
