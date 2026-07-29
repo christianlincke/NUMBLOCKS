@@ -2,32 +2,28 @@
 #include <gbdk/console.h>
 #include <gbdk/font.h>
 #include <rand.h>
-#include "Font.h"
+
+
 #include "tiles.h"
+#include "tiles_empty.h"
+#include "start_screen.h"
 
 #include "core/grid.h"
 #include "core/textbuffer.h"
 #include "render.h"
 
-uint8_t GetCharacterVRamTile(char character)
-{
-    uint8_t vramTile = character - 32;
-    return vramTile;
-}
+void showStartScreen(){
+    // Load Background tiles and then map
+    set_bkg_data(0, start_screen_TILE_COUNT, start_screen_tiles);
+    set_bkg_tiles(0, 0, 20, 18, start_screen_map);
 
-void DrawText(TextBuffer *buffer)
-{
-    for (int y = 0; y < TEXT_HEIGHT; y++)
-    {
-        uint8_t *vramAddress = get_bkg_xy_addr(0, y);
+	// Turn the background map on to make it visible
+    SHOW_BKG;
 
-        for (int x = 0; x < TEXT_WIDTH; x++)
-        {
-            char character = buffer->text[y][x];
-            uint8_t vramTile = GetCharacterVRamTile(character);
-            set_vram_byte(vramAddress++, vramTile);
-        }
+    while (!(joypad() & J_START)) {
+        vsync();
     }
+
 }
 
 uint8_t detectNewJ(uint8_t *jMem, uint8_t *j)
@@ -42,13 +38,13 @@ uint8_t detectNewJ(uint8_t *jMem, uint8_t *j)
 
 void main(void)
 {
+    showStartScreen();
     initrand(sys_time);
 
     SHOW_BKG;
-    // font_init();
-    // font_load(font_ibm);
     set_bkg_data(0, tiles_TILE_COUNT, tiles_tiles);
-    fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, 0);
+    set_bkg_data(tiles_TILE_COUNT, tiles_empty_TILE_COUNT, tiles_empty_tiles);
+    fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT);
 
     MoveFrame mFrame;
 

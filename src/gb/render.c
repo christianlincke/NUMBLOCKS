@@ -16,13 +16,6 @@ void getTileAdresses(Tile *tile, uint8_t number)
     }
 }
 
-uint8_t *getBkgPos(uint8_t gridX, uint8_t gridY)
-{
-    uint8_t x = (gridX * 2) + 6;
-    uint8_t y = (gridY * 2) + 5;
-    return get_bkg_xy_addr(x, y);
-}
-
 void renderGrid(Grid *grid)
 {
     Tile tile;
