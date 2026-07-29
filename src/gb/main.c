@@ -3,9 +3,11 @@
 #include <gbdk/font.h>
 #include <rand.h>
 #include "Font.h"
+#include "tiles.h"
 
 #include "core/grid.h"
 #include "core/textbuffer.h"
+#include "render.h"
 
 uint8_t GetCharacterVRamTile(char character)
 {
@@ -43,12 +45,10 @@ void main(void)
     initrand(sys_time);
 
     SHOW_BKG;
-    font_init();
-    font_load(font_ibm);
+    // font_init();
+    // font_load(font_ibm);
+    set_bkg_data(0, tiles_TILE_COUNT, tiles_tiles);
     fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, 0);
-
-    TextBuffer buffer;
-    tb_init(&buffer);
 
     MoveFrame mFrame;
 
@@ -57,9 +57,7 @@ void main(void)
     grid_newCell(&grid);
     grid_newCell(&grid);
 
-    grid_dump(&grid, &buffer);
-
-    DrawText(&buffer);
+    renderGrid(&grid);
 
     uint8_t j;
     uint8_t jMem = 0;
@@ -101,19 +99,16 @@ void main(void)
         if (pushActive != MOVE_NONE)
         {
             pushActive = grid_move(&grid, &mFrame, dir);
-
-            grid_dump(&grid, &buffer);
         }
 
         if (pushActive == MOVE_NONE && lastPushActive != MOVE_NONE)
         {
             grid_newCell(&grid);
-            grid_dump(&grid, &buffer);
         }
 
         lastPushActive = pushActive;
 
-        DrawText(&buffer);
+        renderGrid(&grid);
         vsync();
     }
 }
