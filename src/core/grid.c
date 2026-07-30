@@ -29,10 +29,11 @@ void grid_init(Grid *grid)
 
 /**
  * @brief reset the aux flag
- * 
- * @param grid 
+ *
+ * @param grid
  */
-void grid_resetAux(Grid *grid) {
+void grid_resetAux(Grid *grid)
+{
     for (int y = 0; y < GRID_SIZE; y++)
     {
         for (int x = 0; x < GRID_SIZE; x++)
@@ -42,12 +43,10 @@ void grid_resetAux(Grid *grid) {
     }
 }
 
-
 void grid_prepare(Grid *grid)
 {
     grid_resetAux(grid);
 }
-
 
 MoveFrame grid_move(Grid *grid, MoveDirection dir)
 {
@@ -59,13 +58,19 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
     int8_t dy = directions[dir].dy;
 
     // calc start and end positions and step size for each direction
-    uint8_t startX = dx > 0 ? 2 : dx < 0 ? 1 : 0;
-    int8_t endX = dx > 0 ? -1 : dx < 0 ? GRID_SIZE : GRID_SIZE; // not actually the end, just the point we dont want to reach
-    int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1 : 1;
+    uint8_t startX = dx > 0 ? 2 : dx < 0 ? 1
+                                         : 0;
+    int8_t endX = dx > 0 ? -1 : dx < 0 ? GRID_SIZE
+                                       : GRID_SIZE; // not actually the end, just the point we dont want to reach
+    int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1
+                                        : 1;
 
-    uint8_t startY = dy > 0 ? 2 : dy < 0 ? 1 : 0;
-    int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE : GRID_SIZE; // not actually the end, just the point we dont want to reach
-    int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
+    uint8_t startY = dy > 0 ? 2 : dy < 0 ? 1
+                                         : 0;
+    int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE
+                                       : GRID_SIZE; // not actually the end, just the point we dont want to reach
+    int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1
+                                        : 1;
 
     // uint8_t moved = 0;
 
@@ -79,7 +84,6 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
             uint8_t nx = x + dx;
             uint8_t ny = y + dy;
 
-            
             if (grid->cells[ny][nx] == 0 && grid->cells[y][x] != 0)
             {
                 // frame->dx[y][x] = dx;
@@ -102,12 +106,12 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
             {
                 // if the neighbouring cell isnt empty AND neighbouring cell is same value as this cell
                 // AND none of the cell have already merged this turn, neighbour cell += 1
-                
+
                 // frame->cells[y][x] = grid->cells[y][x];
                 // frame->dx[y][x] = dx;
                 // frame->dy[y][x] = dy;
                 // frame->merged[ny][nx] = 1;
-                
+
                 grid->cells[ny][nx] += 1;
                 grid->aux[ny][nx] = 1;
                 grid->cells[y][x] = 0;
@@ -115,32 +119,28 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
                 frame.cells[ny][nx] = grid->cells[ny][nx];
                 frame.cells[y][x] = 0; // for diff rendering
                 frame.moveActive = dir;
-
-                // moved = 1;
             }
             x += stepX;
         }
         y += stepY;
     }
-    // if (moved) {
-        
-    //     return dir;
-    // }
-    // return MOVE_NONE;
-    //memcpy(frame.cells, grid->cells, sizeof(grid->cells));
+
     return frame;
 }
 
 /**
  * @brief sum the cells
- * 
- * @param grid 
- * @return uint8_t 
+ *
+ * @param grid
+ * @return uint8_t
  */
-uint16_t grid_sumCells(Grid *grid) {
+uint16_t grid_sumCells(Grid *grid)
+{
     uint16_t sum = 0;
-    for (uint8_t y = 0; y < GRID_SIZE; y++) {
-        for (uint8_t x = 0; x < GRID_SIZE; x++) {
+    for (uint8_t y = 0; y < GRID_SIZE; y++)
+    {
+        for (uint8_t x = 0; x < GRID_SIZE; x++)
+        {
             sum += grid->cells[y][x];
         }
     }
@@ -149,23 +149,25 @@ uint16_t grid_sumCells(Grid *grid) {
 
 /**
  * @brief sum the aux cells
- * 
- * @param grid 
- * @return uint8_t 
+ *
+ * @param grid
+ * @return uint8_t
  */
-uint8_t grid_sumAux(Grid *grid) {
+uint8_t grid_sumAux(Grid *grid)
+{
     uint8_t sum = 0;
-    for (uint8_t y = 0; y < GRID_SIZE; y++) {
-        for (uint8_t x = 0; x < GRID_SIZE; x++) {
+    for (uint8_t y = 0; y < GRID_SIZE; y++)
+    {
+        for (uint8_t x = 0; x < GRID_SIZE; x++)
+        {
             sum += grid->aux[y][x];
         }
     }
     return sum;
 }
 
-
 MoveFrame grid_newCell(Grid *grid)
-{   
+{
     // reset the grid.aux[]
     grid_resetAux(grid);
 
@@ -181,27 +183,38 @@ MoveFrame grid_newCell(Grid *grid)
         {
             grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
             frame.cells[y][x] = grid->cells[y][x];
-            //memcpy(frame.cells, grid->cells, sizeof(grid->cells));
+
             return frame;
         }
         grid->aux[y][x] = 1;
     }
     grid_resetAux(grid);
-    //memcpy(frame.cells, grid->cells, sizeof(grid->cells));
     return frame;
 }
 
-
-void grid_dump(Grid *grid, TextBuffer *buffer)
+uint8_t grid_checkGameOver(Grid *grid)
 {
-    uint8_t bStartX = (uint8_t)(20 - GRID_SIZE) / 2;
-    uint8_t bStartY = (uint8_t)(18 - GRID_SIZE) / 2;
 
-    for (int y = 0; y < GRID_SIZE; y++)
+    for (uint8_t i = 0; i < 16; i++)
     {
-        for (int x = 0; x < GRID_SIZE; x++)
+        uint8_t x = i % 4;
+        uint8_t y = (uint8_t)i / 4;
+
+        if (x < 3)
         {
-            buffer->text[y + bStartY][x + bStartX] = '0' + grid->cells[y][x];
+            if (grid->cells[y][x] == grid->cells[y][x + 1])
+            {
+                return 0;
+            }
+        }
+
+        if (y < 3)
+        {
+            if (grid->cells[y][x] == grid->cells[y + 1][x])
+            {
+                return 0;
+            }
         }
     }
+    return 1;
 }

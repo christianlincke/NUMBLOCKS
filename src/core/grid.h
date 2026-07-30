@@ -10,7 +10,6 @@
  * 
  */
 
-#include "textbuffer.h"
 #include "moveframe.h"
 #include "defines.h"
 
@@ -57,17 +56,17 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir);
 MoveFrame grid_newCell(Grid *grid);
 
 /**
- * @brief dump grid content into textbuffer
- *
- * @param grid
- * @param buffer
- */
-void grid_dump(Grid *grid, TextBuffer *buffer);
-
-/**
  * @brief calculate the sum of all cells
  * 
  * @param grid 
- * @return int16_t 
+ * @return int16_t sum of all the cells
  */
 uint16_t grid_sumCells(Grid *grid);
+
+/**
+ * @brief checks whether there are any possible moves
+ * 
+ * @param grid 
+ * @return uint8_t 1 if game over
+ */
+uint8_t grid_checkGameOver(Grid *grid);
