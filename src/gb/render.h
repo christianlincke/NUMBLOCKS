@@ -25,3 +25,15 @@ void renderGrid(Renderer *renderer, MoveFrame *frame);
  * @param score the score (sum of all tiles)
  */
 void renderScore(uint16_t score);
+
+/**
+ * @brief render game over screen
+ * 
+ */
+void renderGameOverAnimation();
+
+/**
+ * @brief  renders the start screen
+ * 
+ */
+void renderStartScreen();
