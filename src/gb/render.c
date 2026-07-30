@@ -13,6 +13,7 @@
 void rendererBegin(Renderer *renderer, uint8_t gridSize)
 {
     renderer->size = gridSize;
+    
     // load tiles, empties and font
     set_bkg_data(0, tiles_TILE_COUNT, tiles_tiles);
     set_bkg_data(tiles_TILE_COUNT, gameover_TILE_COUNT, gameover_tiles);

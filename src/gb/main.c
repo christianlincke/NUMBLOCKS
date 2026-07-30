@@ -34,6 +34,7 @@ uint8_t joypadDebounce(uint8_t *jMem)
 
 void main(void)
 {
+    SHOW_BKG;
     startScreen();
     initrand(sys_time);
 
@@ -108,7 +109,7 @@ void main(void)
 
         if (j & J_START)
         {
-            renderGameOverAnimation();
+            renderGameOverAnimation(&renderer);
             while (!(joypad() & J_START))
             {
                 vsync();

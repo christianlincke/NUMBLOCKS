@@ -15,6 +15,7 @@ static const DirectionVector directions[] = {
     [MOVE_LEFT] = {-1, 0},
     [MOVE_RIGHT] = {1, 0}};
 
+
 void grid_init(Grid *grid, uint8_t gridSize)
 {
     grid->size = gridSize;
@@ -52,7 +53,7 @@ void grid_prepare(Grid *grid)
 MoveFrame grid_move(Grid *grid, MoveDirection dir)
 {
     MoveFrame frame;
-    moveFrame_clear(&frame);
+    moveFrame_init(&frame, grid->size);
 
     // get direction Vectors (in which direction should each cell look at its neighbour?)
     int8_t dx = directions[dir].dx;
@@ -165,7 +166,7 @@ MoveFrame grid_newCell(Grid *grid)
     grid_resetAux(grid);
 
     MoveFrame frame;
-    moveFrame_clear(&frame);
+    moveFrame_init(&frame, grid->size);
 
     while (grid_sumAux(grid) < (grid->size * grid->size))
     {
@@ -193,7 +194,7 @@ uint8_t grid_checkGameOver(Grid *grid)
         for (uint8_t x = 0; x < grid->size; x++)
         {
 
-            if (x < 3)
+            if (x < grid->size - 1)
             {
                 if (grid->cells[y][x] == grid->cells[y][x + 1])
                 {
@@ -201,7 +202,7 @@ uint8_t grid_checkGameOver(Grid *grid)
                 }
             }
 
-            if (y < 3)
+            if (y < grid->size - 1)
             {
                 if (grid->cells[y][x] == grid->cells[y + 1][x])
                 {
