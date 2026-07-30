@@ -16,7 +16,7 @@
 
 typedef struct
 {
-    uint8_t cells[GRID_SIZE][GRID_SIZE];
+    int8_t cells[GRID_SIZE][GRID_SIZE];
     MoveDirection moveActive;
 } MoveFrame;
 

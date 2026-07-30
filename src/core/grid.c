@@ -1,6 +1,7 @@
 #include "grid.h"
 
 #include "random_byte.h"
+#include <string.h>
 
 typedef struct
 {
@@ -92,6 +93,7 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
                 grid->aux[y][x] = 0;
 
                 frame.cells[ny][nx] = grid->cells[ny][nx];
+                frame.cells[y][x] = 0; // for diff rendering
                 frame.moveActive = dir;
 
                 // moved = 1;
@@ -111,6 +113,7 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
                 grid->cells[y][x] = 0;
 
                 frame.cells[ny][nx] = grid->cells[ny][nx];
+                frame.cells[y][x] = 0; // for diff rendering
                 frame.moveActive = dir;
 
                 // moved = 1;
@@ -124,6 +127,7 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
     //     return dir;
     // }
     // return MOVE_NONE;
+    //memcpy(frame.cells, grid->cells, sizeof(grid->cells));
     return frame;
 }
 
@@ -160,10 +164,13 @@ uint8_t grid_sumAux(Grid *grid) {
 }
 
 
-void grid_newCell(Grid *grid)
+MoveFrame grid_newCell(Grid *grid)
 {   
     // reset the grid.aux[]
     grid_resetAux(grid);
+
+    MoveFrame frame;
+    moveFrame_clear(&frame);
 
     while (grid_sumAux(grid) < (GRID_SIZE * GRID_SIZE))
     {
@@ -173,11 +180,15 @@ void grid_newCell(Grid *grid)
         if (grid->cells[y][x] == 0)
         {
             grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
-            return;
+            frame.cells[y][x] = grid->cells[y][x];
+            //memcpy(frame.cells, grid->cells, sizeof(grid->cells));
+            return frame;
         }
         grid->aux[y][x] = 1;
     }
     grid_resetAux(grid);
+    //memcpy(frame.cells, grid->cells, sizeof(grid->cells));
+    return frame;
 }
 
 

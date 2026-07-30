@@ -54,7 +54,7 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir);
  *
  * @param grid the grid
  */
-void grid_newCell(Grid *grid);
+MoveFrame grid_newCell(Grid *grid);
 
 /**
  * @brief dump grid content into textbuffer

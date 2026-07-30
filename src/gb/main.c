@@ -46,15 +46,22 @@ void main(void)
     set_bkg_data(tiles_TILE_COUNT, tiles_empty_TILE_COUNT, tiles_empty_tiles);
     fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT);
 
+    // init Grid, MoveFrame and Renderer
+    Grid grid;
+    grid_init(&grid);
+
     MoveFrame moveFrame;
     moveFrame_clear(&moveFrame);
 
-    Grid grid;
-    grid_init(&grid);
-    grid_newCell(&grid);
-    grid_newCell(&grid);
+    Renderer renderer;
+    rendererBegin(&renderer);
 
-    renderGrid(&grid);
+    // spawn two cells
+    moveFrame = grid_newCell(&grid);
+    renderGrid(&renderer, &moveFrame);
+
+    moveFrame = grid_newCell(&grid);
+    renderGrid(&renderer, &moveFrame);
 
     uint8_t j;
     uint8_t jMem = 0;
@@ -103,12 +110,12 @@ void main(void)
 
         if (moveFrame.moveActive == MOVE_NONE && lastPushActive != MOVE_NONE)
         {
-            grid_newCell(&grid);
+            moveFrame = grid_newCell(&grid);
         }
 
         lastPushActive = moveFrame.moveActive;
 
-        renderGrid(&grid);
+        renderGrid(&renderer, &moveFrame);
         vsync();
     }
 }

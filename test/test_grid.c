@@ -105,7 +105,7 @@ UTEST(grid, newCellTest)
 {
     grid_init(&grid);
 
-    grid_newCell(&grid);
+    mf = grid_newCell(&grid);
     uint8_t num_changed = 0;
     for (int y = 0; y < 4; y++)
     {
@@ -118,7 +118,7 @@ UTEST(grid, newCellTest)
     }
     ASSERT_EQ(num_changed, 1);
 
-    grid_newCell(&grid);
+    mf = grid_newCell(&grid);
     num_changed = 0;
     for (int y = 0; y < 4; y++)
     {
