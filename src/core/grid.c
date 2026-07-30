@@ -48,8 +48,11 @@ void grid_prepare(Grid *grid)
 }
 
 
-MoveDirection grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
+MoveFrame grid_move(Grid *grid, MoveDirection dir)
 {
+    MoveFrame frame;
+    moveFrame_clear(&frame);
+
     // get direction Vectors (in which direction should each cell look at its neighbour?)
     int8_t dx = directions[dir].dx;
     int8_t dy = directions[dir].dy;
@@ -63,7 +66,7 @@ MoveDirection grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
     int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE : GRID_SIZE; // not actually the end, just the point we dont want to reach
     int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
 
-    uint8_t moved = 0;
+    // uint8_t moved = 0;
 
     int y = startY;
     while (y != endY)
@@ -78,10 +81,9 @@ MoveDirection grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
             
             if (grid->cells[ny][nx] == 0 && grid->cells[y][x] != 0)
             {
-                frame->value[y][x] = grid->cells[y][x];
-                frame->dx[y][x] = dx;
-                frame->dy[y][x] = dy;
-                frame->merged[ny][nx] = 0;
+                // frame->dx[y][x] = dx;
+                // frame->dy[y][x] = dy;
+                // frame->merged[ny][nx] = 0;
 
                 grid->cells[ny][nx] = grid->cells[y][x];
                 grid->aux[ny][nx] = grid->aux[y][x];
@@ -89,31 +91,40 @@ MoveDirection grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
                 grid->cells[y][x] = 0;
                 grid->aux[y][x] = 0;
 
-                moved = 1;
+                frame.cells[ny][nx] = grid->cells[ny][nx];
+                frame.moveActive = dir;
+
+                // moved = 1;
             }
             else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->aux[ny][nx] && !grid->aux[y][x])
             {
                 // if the neighbouring cell isnt empty AND neighbouring cell is same value as this cell
                 // AND none of the cell have already merged this turn, neighbour cell += 1
-                frame->value[y][x] = grid->cells[y][x];
-                frame->dx[y][x] = dx;
-                frame->dy[y][x] = dy;
-                frame->merged[ny][nx] = 1;
+                
+                // frame->cells[y][x] = grid->cells[y][x];
+                // frame->dx[y][x] = dx;
+                // frame->dy[y][x] = dy;
+                // frame->merged[ny][nx] = 1;
                 
                 grid->cells[ny][nx] += 1;
                 grid->aux[ny][nx] = 1;
                 grid->cells[y][x] = 0;
 
-                moved = 1;
+                frame.cells[ny][nx] = grid->cells[ny][nx];
+                frame.moveActive = dir;
+
+                // moved = 1;
             }
             x += stepX;
         }
         y += stepY;
     }
-    if (moved) {
-        return dir;
-    }
-    return MOVE_NONE;
+    // if (moved) {
+        
+    //     return dir;
+    // }
+    // return MOVE_NONE;
+    return frame;
 }
 
 /**

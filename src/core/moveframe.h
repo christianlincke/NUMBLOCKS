@@ -16,15 +16,13 @@
 
 typedef struct
 {
-    uint8_t value[GRID_SIZE][GRID_SIZE];
-    int8_t dx[GRID_SIZE][GRID_SIZE];
-    int8_t dy[GRID_SIZE][GRID_SIZE];
-    uint8_t merged[GRID_SIZE][GRID_SIZE];
+    uint8_t cells[GRID_SIZE][GRID_SIZE];
+    MoveDirection moveActive;
 } MoveFrame;
 
 /**
  * @brief initialize / clear the move event
  *
- * @param event
+ * @param frame
  */
-void moveFrame_clear(MoveFrame *event);
+void moveFrame_clear(MoveFrame *frame);

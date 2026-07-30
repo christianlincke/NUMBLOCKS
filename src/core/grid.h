@@ -16,13 +16,6 @@
 
 #include <stdint.h>
 
-typedef enum {
-    MOVE_NONE = 0,
-    MOVE_UP = 1,
-    MOVE_DOWN = 2,
-    MOVE_LEFT = 3,
-    MOVE_RIGHT = 4
-} MoveDirection;
 
 /**
  * @brief this is where the core data lives
@@ -54,7 +47,7 @@ void grid_prepare(Grid *grid);
  * @param dir direction
  * @return uint8_t 0 if push is completed, dir if there might be more to do
  */
-MoveDirection grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir);
+MoveFrame grid_move(Grid *grid, MoveDirection dir);
 
 /**
  * @brief adds an randomly selected empty sell with a random value (2 or 4)

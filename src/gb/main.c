@@ -1,16 +1,17 @@
+// GBDK
 #include <gb/gb.h>
 #include <gbdk/console.h>
 #include <gbdk/font.h>
 #include <rand.h>
 
+// LOGIC
+#include "core/grid.h"
+#include "render.h"
 
+// ASSETS
 #include "tiles.h"
 #include "tiles_empty.h"
 #include "start_screen.h"
-
-#include "core/grid.h"
-#include "core/textbuffer.h"
-#include "render.h"
 
 void showStartScreen(){
     // Load Background tiles and then map
@@ -23,7 +24,6 @@ void showStartScreen(){
     while (!(joypad() & J_START)) {
         vsync();
     }
-
 }
 
 uint8_t detectNewJ(uint8_t *jMem, uint8_t *j)
@@ -46,7 +46,8 @@ void main(void)
     set_bkg_data(tiles_TILE_COUNT, tiles_empty_TILE_COUNT, tiles_empty_tiles);
     fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT);
 
-    MoveFrame mFrame;
+    MoveFrame moveFrame;
+    moveFrame_clear(&moveFrame);
 
     Grid grid;
     grid_init(&grid);
@@ -59,8 +60,8 @@ void main(void)
     uint8_t jMem = 0;
     MoveDirection dir;
 
-    MoveDirection pushActive = 0;
-    uint8_t lastPushActive = 0;
+    MoveDirection startMove = MOVE_NONE;
+    MoveDirection lastPushActive = MOVE_NONE;
 
     while (1)
     {
@@ -71,38 +72,41 @@ void main(void)
         {
             dir = MOVE_UP;
             grid_prepare(&grid);
-            pushActive = MOVE_UP;
+            startMove = MOVE_UP;
         }
         else if (j & J_DOWN)
         {
             dir = MOVE_DOWN;
             grid_prepare(&grid);
-            pushActive = MOVE_DOWN;
+            startMove = MOVE_DOWN;
         }
         else if (j & J_LEFT)
         {
             dir = MOVE_LEFT;
             grid_prepare(&grid);
-            pushActive = MOVE_LEFT;
+            startMove = MOVE_LEFT;
         }
         else if (j & J_RIGHT)
         {
             dir = MOVE_RIGHT;
             grid_prepare(&grid);
-            pushActive = MOVE_RIGHT;
+            startMove = MOVE_RIGHT;
+        }
+        else {
+            startMove = MOVE_NONE;
         }
 
-        if (pushActive != MOVE_NONE)
+        if (moveFrame.moveActive != MOVE_NONE || startMove != MOVE_NONE)
         {
-            pushActive = grid_move(&grid, &mFrame, dir);
+            moveFrame = grid_move(&grid, dir);
         }
 
-        if (pushActive == MOVE_NONE && lastPushActive != MOVE_NONE)
+        if (moveFrame.moveActive == MOVE_NONE && lastPushActive != MOVE_NONE)
         {
             grid_newCell(&grid);
         }
 
-        lastPushActive = pushActive;
+        lastPushActive = moveFrame.moveActive;
 
         renderGrid(&grid);
         vsync();

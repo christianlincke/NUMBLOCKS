@@ -23,22 +23,22 @@ UTEST(grid, pushSingleTest)
     grid_init(&grid);
     grid.cells[3][0] = 1;
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_UP)){};
+    while(grid_move(&grid, MOVE_UP).moveActive){};
     ASSERT_EQ(grid.cells[3][0], 0);
     ASSERT_EQ(grid.cells[0][0], 1);
 
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_RIGHT)){};
+    while(grid_move(&grid, MOVE_RIGHT).moveActive){};
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][3], 1);
 
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_DOWN)){};
+    while(grid_move(&grid, MOVE_DOWN).moveActive){};
     ASSERT_EQ(grid.cells[0][3], 0);
     ASSERT_EQ(grid.cells[3][3], 1);
 
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_LEFT)){};
+    while(grid_move(&grid, MOVE_LEFT).moveActive){};
     ASSERT_EQ(grid.cells[3][3], 0);
     ASSERT_EQ(grid.cells[3][0], 1);
 }
@@ -50,20 +50,20 @@ UTEST(grid, pushTwoTest)
     grid.cells[0][0] = 1;
 
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_UP)){};
+    while(grid_move(&grid, MOVE_UP).moveActive){};
     ASSERT_EQ(grid.cells[3][0], 0);
     ASSERT_EQ(grid.cells[0][0], 2);
 
     grid_prepare(&grid);
     grid.cells[0][3] = 1;
-    while(grid_move(&grid, &mf, MOVE_RIGHT)){};
+    while(grid_move(&grid, MOVE_RIGHT).moveActive){};
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][3], 1);
     ASSERT_EQ(grid.cells[0][2], 2);
 
     grid.cells[0][3] = 2;
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_LEFT)){};
+    while(grid_move(&grid, MOVE_LEFT).moveActive){};
     ASSERT_EQ(grid.cells[0][0], 3);
     ASSERT_EQ(grid.cells[0][3], 0);
     ASSERT_EQ(grid.cells[0][2], 0);
@@ -78,7 +78,7 @@ UTEST(grid, pushThreeTest)
     grid.cells[0][3] = 0;
 
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_RIGHT)){};
+    while(grid_move(&grid, MOVE_RIGHT).moveActive){};
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][1], 0);
     ASSERT_EQ(grid.cells[0][2], 2);
@@ -94,7 +94,7 @@ UTEST(grid, pushFourTest)
     grid.cells[0][3] = 1;
 
     grid_prepare(&grid);
-    while(grid_move(&grid, &mf, MOVE_RIGHT)){};
+    while(grid_move(&grid, MOVE_RIGHT).moveActive){};
     ASSERT_EQ(grid.cells[0][0], 0);
     ASSERT_EQ(grid.cells[0][1], 0);
     ASSERT_EQ(grid.cells[0][2], 2);
@@ -137,14 +137,11 @@ UTEST(grid, moveframeTest) {
     grid.cells[3][0] = 1;
     
     grid_prepare(&grid);
-    moveFrame_clear(&mf);
 
-    grid_move(&grid, &mf, MOVE_UP);
+    mf = grid_move(&grid, MOVE_UP);
 
-    ASSERT_EQ(mf.value[3][0], 1);
-    ASSERT_EQ(mf.dy[3][0], -1);
-    ASSERT_EQ(mf.dx[2][0], 0);
-    ASSERT_EQ(mf.dy[2][0], 0);
-    ASSERT_EQ(mf.merged[2][0], 0);
+    ASSERT_EQ(mf.cells[3][0], 0);
+    ASSERT_EQ(mf.cells[2][0], 1);
+    ASSERT_EQ(mf.moveActive, MOVE_UP);
     
 }
