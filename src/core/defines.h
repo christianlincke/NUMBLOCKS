@@ -1,7 +1,7 @@
 #pragma once
 
 // just a couple of defines
-#define GRID_SIZE 4
+#define GRID_SIZE 4 // size of the playing field
 
 // move directions
 typedef enum {

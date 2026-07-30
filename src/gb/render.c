@@ -26,13 +26,6 @@ void rendererBegin(Renderer *renderer)
         for (int x = 0; x < GRID_SIZE; x++)
         {
             renderer->frame[y][x] = 0;
-
-            // uint8_t map[] = {4 * renderer->frame[y][x], 4 * renderer->frame[y][x] + 2, 4 * renderer->frame[y][x] + 1, 4 * renderer->frame[y][x] + 3};
-
-            // uint8_t bx = x * 2 + 6;
-            // uint8_t by = y * 2 + 5;
-
-            // set_bkg_tiles(bx, by, 2, 2, map);
         }
     }
 }
@@ -51,8 +44,8 @@ void renderGrid(Renderer *renderer, MoveFrame *frame)
 
             uint8_t map[] = {4 * renderer->frame[y][x], 4 * renderer->frame[y][x] + 2, 4 * renderer->frame[y][x] + 1, 4 * renderer->frame[y][x] + 3};
 
-            uint8_t bx = x * 2 + 6;
-            uint8_t by = y * 2 + 5;
+            uint8_t bx = x * 2 + (20 - 2 * GRID_SIZE) / 2; // SCREENWIDTH in gb tiles
+            uint8_t by = y * 2 + (18 - 2 * GRID_SIZE) / 2; // SCREENHEIGHT in gb tiles
 
             set_bkg_tiles(bx, by, 2, 2, map);
         }
@@ -74,8 +67,8 @@ void renderGameOverAnimation()
     {
         for (int x = 0; x < GRID_SIZE; x++)
         {
-            uint8_t bx = x * 2 + 6;
-            uint8_t by = y * 2 + 5;
+            uint8_t bx = x * 2 + (20 - 2 * GRID_SIZE); // SCREENWIDTH in gb tiles
+            uint8_t by = y * 2 + (18 - 2 * GRID_SIZE); // SCREENHEIGHT in gb tiles
 
             if (y == 1) {
                 startTile = tiles_TILE_COUNT;

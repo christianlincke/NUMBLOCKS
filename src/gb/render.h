@@ -7,7 +7,7 @@ typedef struct {
 } Renderer;
 
 /**
- * @brief draw empty grid
+ * @brief load data and draw background
  * 
  */
 void rendererBegin(Renderer *renderer);

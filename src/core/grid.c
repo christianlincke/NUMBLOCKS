@@ -58,14 +58,14 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
     int8_t dy = directions[dir].dy;
 
     // calc start and end positions and step size for each direction
-    uint8_t startX = dx > 0 ? 2 : dx < 0 ? 1
+    uint8_t startX = dx > 0 ? (GRID_SIZE - 2) : dx < 0 ? 1
                                          : 0;
     int8_t endX = dx > 0 ? -1 : dx < 0 ? GRID_SIZE
                                        : GRID_SIZE; // not actually the end, just the point we dont want to reach
     int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1
                                         : 1;
 
-    uint8_t startY = dy > 0 ? 2 : dy < 0 ? 1
+    uint8_t startY = dy > 0 ? (GRID_SIZE - 2) : dy < 0 ? 1
                                          : 0;
     int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE
                                        : GRID_SIZE; // not actually the end, just the point we dont want to reach
@@ -86,9 +86,6 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
 
             if (grid->cells[ny][nx] == 0 && grid->cells[y][x] != 0)
             {
-                // frame->dx[y][x] = dx;
-                // frame->dy[y][x] = dy;
-                // frame->merged[ny][nx] = 0;
 
                 grid->cells[ny][nx] = grid->cells[y][x];
                 grid->aux[ny][nx] = grid->aux[y][x];
@@ -100,17 +97,12 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
                 frame.cells[y][x] = 0; // for diff rendering
                 frame.moveActive = dir;
 
-                // moved = 1;
+                
             }
             else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->aux[ny][nx] && !grid->aux[y][x])
             {
                 // if the neighbouring cell isnt empty AND neighbouring cell is same value as this cell
                 // AND none of the cell have already merged this turn, neighbour cell += 1
-
-                // frame->cells[y][x] = grid->cells[y][x];
-                // frame->dx[y][x] = dx;
-                // frame->dy[y][x] = dy;
-                // frame->merged[ny][nx] = 1;
 
                 grid->cells[ny][nx] += 1;
                 grid->aux[ny][nx] = 1;
@@ -195,24 +187,25 @@ MoveFrame grid_newCell(Grid *grid)
 uint8_t grid_checkGameOver(Grid *grid)
 {
 
-    for (uint8_t i = 0; i < 16; i++)
+    for (uint8_t y = 0; y < GRID_SIZE; y++)
     {
-        uint8_t x = i % 4;
-        uint8_t y = (uint8_t)i / 4;
-
-        if (x < 3)
+        for (uint8_t x = 0; x < GRID_SIZE; x++)
         {
-            if (grid->cells[y][x] == grid->cells[y][x + 1])
+
+            if (x < 3)
             {
-                return 0;
+                if (grid->cells[y][x] == grid->cells[y][x + 1])
+                {
+                    return 0;
+                }
             }
-        }
 
-        if (y < 3)
-        {
-            if (grid->cells[y][x] == grid->cells[y + 1][x])
+            if (y < 3)
             {
-                return 0;
+                if (grid->cells[y][x] == grid->cells[y + 1][x])
+                {
+                    return 0;
+                }
             }
         }
     }

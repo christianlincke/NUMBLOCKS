@@ -9,7 +9,7 @@
 #include "render.h"
 
 
-void StartScreen()
+void startScreen()
 {
     renderStartScreen();
 
