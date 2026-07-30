@@ -12,20 +12,20 @@
 #define tiles_TILE_W 8
 #define tiles_TILE_H 16
 #define tiles_WIDTH 64
-#define tiles_HEIGHT 64
-#define tiles_TILE_COUNT 64
+#define tiles_HEIGHT 96
+#define tiles_TILE_COUNT 96
 #define tiles_PALETTE_COUNT 1
 #define tiles_COLORS_PER_PALETTE 4
 #define tiles_TOTAL_COLORS 4
 #define tiles_PIVOT_X 32
-#define tiles_PIVOT_Y 32
+#define tiles_PIVOT_Y 48
 #define tiles_PIVOT_W 64
-#define tiles_PIVOT_H 64
+#define tiles_PIVOT_H 96
 extern const metasprite_t* const tiles_metasprites[1];
 
 BANKREF_EXTERN(tiles)
 
 extern const palette_color_t tiles_palettes[4];
-extern const uint8_t tiles_tiles[1024];
+extern const uint8_t tiles_tiles[1536];
 
 #endif

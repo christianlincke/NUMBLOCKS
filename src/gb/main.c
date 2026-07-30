@@ -6,15 +6,18 @@
 // game stuff
 
 #include "game.h"
-
-#define GRID_SIZE 4
+#include "render.h"
 
 void main(void)
 {
     SHOW_BKG;
+
     startScreen();
+    loadAssets();
+
     while(1){
-        uint16_t score = runGame(GRID_SIZE);
+        uint8_t gridSize = mainMenu();
+        uint16_t score = runGame(gridSize);
     }
     
 }
