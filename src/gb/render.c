@@ -69,8 +69,8 @@ void renderGameOverAnimation(Renderer *renderer)
     {
         for (int x = 0; x < renderer->size; x++)
         {
-            uint8_t bx = x * 2 + (20 - 2 * renderer->size); // SCREENWIDTH in gb tiles
-            uint8_t by = y * 2 + (18 - 2 * renderer->size); // SCREENHEIGHT in gb tiles
+            uint8_t bx = x * 2 + ((20 - 2 * renderer->size) / 2); // SCREENWIDTH in gb tiles
+            uint8_t by = y * 2 + ((18 - 2 * renderer->size) / 2); // SCREENHEIGHT in gb tiles
 
             if (y == 1) {
                 startTile = tiles_TILE_COUNT;
