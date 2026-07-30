@@ -8,6 +8,8 @@
 #include "core/grid.h"
 #include "render.h"
 
+#define GRID_SIZE 4
+
 
 void startScreen()
 {
@@ -19,31 +21,31 @@ void startScreen()
     }
 }
 
-uint8_t detectNewJ(uint8_t *jMem, uint8_t *j)
+uint8_t joypadDebounce(uint8_t *jMem)
 {
-    if (*j == *jMem)
+    uint8_t j = joypad();
+    if (j == *jMem)
     {
         return 0;
     }
-    *jMem = *j;
-    return *j;
+    *jMem = j;
+    return j;
 }
 
 void main(void)
 {
-    SHOW_BKG;
     startScreen();
     initrand(sys_time);
 
     // init Grid, MoveFrame and Renderer
     Grid grid;
-    grid_init(&grid);
+    grid_init(&grid, GRID_SIZE);
 
     MoveFrame moveFrame;
-    moveFrame_clear(&moveFrame);
+    moveFrame_init(&moveFrame, GRID_SIZE);
 
     Renderer renderer;
-    rendererBegin(&renderer);
+    rendererBegin(&renderer, GRID_SIZE);
 
     // spawn two cells
     moveFrame = grid_newCell(&grid);
@@ -52,7 +54,7 @@ void main(void)
     moveFrame = grid_newCell(&grid);
     renderGrid(&renderer, &moveFrame);
 
-    uint8_t j;
+    uint8_t j = 0;
     uint8_t jMem = 0;
     MoveDirection dir;
 
@@ -61,8 +63,7 @@ void main(void)
 
     while (1)
     {
-        j = joypad();
-        j = detectNewJ(&jMem, &j);
+        j = joypadDebounce(&jMem);
 
         if (j & J_UP)
         {

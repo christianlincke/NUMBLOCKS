@@ -15,11 +15,12 @@ static const DirectionVector directions[] = {
     [MOVE_LEFT] = {-1, 0},
     [MOVE_RIGHT] = {1, 0}};
 
-void grid_init(Grid *grid)
+void grid_init(Grid *grid, uint8_t gridSize)
 {
-    for (int y = 0; y < GRID_SIZE; y++)
+    grid->size = gridSize;
+    for (int y = 0; y < grid->size; y++)
     {
-        for (int x = 0; x < GRID_SIZE; x++)
+        for (int x = 0; x < grid->size; x++)
         {
             grid->cells[y][x] = 0;
             grid->aux[y][x] = 0;
@@ -34,9 +35,9 @@ void grid_init(Grid *grid)
  */
 void grid_resetAux(Grid *grid)
 {
-    for (int y = 0; y < GRID_SIZE; y++)
+    for (int y = 0; y < grid->size; y++)
     {
-        for (int x = 0; x < GRID_SIZE; x++)
+        for (int x = 0; x < grid->size; x++)
         {
             grid->aux[y][x] = 0;
         }
@@ -58,17 +59,17 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
     int8_t dy = directions[dir].dy;
 
     // calc start and end positions and step size for each direction
-    uint8_t startX = dx > 0 ? (GRID_SIZE - 2) : dx < 0 ? 1
+    uint8_t startX = dx > 0 ? (grid->size - 2) : dx < 0 ? 1
                                          : 0;
-    int8_t endX = dx > 0 ? -1 : dx < 0 ? GRID_SIZE
-                                       : GRID_SIZE; // not actually the end, just the point we dont want to reach
+    int8_t endX = dx > 0 ? -1 : dx < 0 ? grid->size
+                                       : grid->size; // not actually the end, just the point we dont want to reach
     int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1
                                         : 1;
 
-    uint8_t startY = dy > 0 ? (GRID_SIZE - 2) : dy < 0 ? 1
+    uint8_t startY = dy > 0 ? (grid->size - 2) : dy < 0 ? 1
                                          : 0;
-    int8_t endY = dy > 0 ? -1 : dy < 0 ? GRID_SIZE
-                                       : GRID_SIZE; // not actually the end, just the point we dont want to reach
+    int8_t endY = dy > 0 ? -1 : dy < 0 ? grid->size
+                                       : grid->size; // not actually the end, just the point we dont want to reach
     int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1
                                         : 1;
 
@@ -129,9 +130,9 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
 uint16_t grid_sumCells(Grid *grid)
 {
     uint16_t sum = 0;
-    for (uint8_t y = 0; y < GRID_SIZE; y++)
+    for (uint8_t y = 0; y < grid->size; y++)
     {
-        for (uint8_t x = 0; x < GRID_SIZE; x++)
+        for (uint8_t x = 0; x < grid->size; x++)
         {
             sum += grid->cells[y][x];
         }
@@ -148,9 +149,9 @@ uint16_t grid_sumCells(Grid *grid)
 uint8_t grid_sumAux(Grid *grid)
 {
     uint8_t sum = 0;
-    for (uint8_t y = 0; y < GRID_SIZE; y++)
+    for (uint8_t y = 0; y < grid->size; y++)
     {
-        for (uint8_t x = 0; x < GRID_SIZE; x++)
+        for (uint8_t x = 0; x < grid->size; x++)
         {
             sum += grid->aux[y][x];
         }
@@ -166,10 +167,10 @@ MoveFrame grid_newCell(Grid *grid)
     MoveFrame frame;
     moveFrame_clear(&frame);
 
-    while (grid_sumAux(grid) < (GRID_SIZE * GRID_SIZE))
+    while (grid_sumAux(grid) < (grid->size * grid->size))
     {
-        uint8_t x = (uint8_t)(random_byte() % GRID_SIZE);
-        uint8_t y = (uint8_t)(random_byte() % GRID_SIZE);
+        uint8_t x = (uint8_t)(random_byte() % grid->size);
+        uint8_t y = (uint8_t)(random_byte() % grid->size);
 
         if (grid->cells[y][x] == 0)
         {
@@ -187,9 +188,9 @@ MoveFrame grid_newCell(Grid *grid)
 uint8_t grid_checkGameOver(Grid *grid)
 {
 
-    for (uint8_t y = 0; y < GRID_SIZE; y++)
+    for (uint8_t y = 0; y < grid->size; y++)
     {
-        for (uint8_t x = 0; x < GRID_SIZE; x++)
+        for (uint8_t x = 0; x < grid->size; x++)
         {
 
             if (x < 3)

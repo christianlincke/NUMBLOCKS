@@ -11,7 +11,6 @@
  */
 
 #include "moveframe.h"
-#include "defines.h"
 
 #include <stdint.h>
 
@@ -21,8 +20,9 @@
  * 
  */
 typedef struct {
-    uint8_t cells[GRID_SIZE][GRID_SIZE];
-    uint8_t aux[GRID_SIZE][GRID_SIZE]; // TODO does this live here?
+    uint8_t cells[8][8];
+    uint8_t aux[8][8]; // TODO does this live here?
+    uint8_t size;
 } Grid;
 
 /**
@@ -30,7 +30,7 @@ typedef struct {
  * 
  * @param grid 
  */
-void grid_init(Grid *grid);
+void grid_init(Grid *grid, uint8_t gridSize);
 
 /**
  * @brief prepare for a new move

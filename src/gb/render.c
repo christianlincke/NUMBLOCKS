@@ -10,8 +10,9 @@
 
 #define GAME_OVER_ANIMATION_SPEED 30 // vsyncs per tile
 
-void rendererBegin(Renderer *renderer)
+void rendererBegin(Renderer *renderer, uint8_t gridSize)
 {
+    renderer->size = gridSize;
     // load tiles, empties and font
     set_bkg_data(0, tiles_TILE_COUNT, tiles_tiles);
     set_bkg_data(tiles_TILE_COUNT, gameover_TILE_COUNT, gameover_tiles);
@@ -21,9 +22,9 @@ void rendererBegin(Renderer *renderer)
     fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT + gameover_TILE_COUNT);
     SHOW_BKG;
 
-    for (int y = 0; y < GRID_SIZE; y++)
+    for (int y = 0; y < renderer->size; y++)
     {
-        for (int x = 0; x < GRID_SIZE; x++)
+        for (int x = 0; x < renderer->size; x++)
         {
             renderer->frame[y][x] = 0;
         }
@@ -32,9 +33,9 @@ void rendererBegin(Renderer *renderer)
 
 void renderGrid(Renderer *renderer, MoveFrame *frame)
 {
-    for (int y = 0; y < GRID_SIZE; y++)
+    for (int y = 0; y < renderer->size; y++)
     {
-        for (int x = 0; x < GRID_SIZE; x++)
+        for (int x = 0; x < renderer->size; x++)
         {
             // only render if theres a change
             if (frame->cells[y][x] >= 0)
@@ -44,8 +45,8 @@ void renderGrid(Renderer *renderer, MoveFrame *frame)
 
             uint8_t map[] = {4 * renderer->frame[y][x], 4 * renderer->frame[y][x] + 2, 4 * renderer->frame[y][x] + 1, 4 * renderer->frame[y][x] + 3};
 
-            uint8_t bx = x * 2 + (20 - 2 * GRID_SIZE) / 2; // SCREENWIDTH in gb tiles
-            uint8_t by = y * 2 + (18 - 2 * GRID_SIZE) / 2; // SCREENHEIGHT in gb tiles
+            uint8_t bx = x * 2 + (20 - 2 * renderer->size) / 2; // SCREENWIDTH in gb tiles
+            uint8_t by = y * 2 + (18 - 2 * renderer->size) / 2; // SCREENHEIGHT in gb tiles
 
             set_bkg_tiles(bx, by, 2, 2, map);
         }
@@ -56,19 +57,19 @@ void renderScore(uint16_t score)
 {
 }
 
-void renderGameOverAnimation()
+void renderGameOverAnimation(Renderer *renderer)
 {
     uint8_t startTile;
     uint8_t counter;
     uint8_t tileMap0[4] = {0, 2, 1, 3};
 
     // first line all empty
-    for (int y = 0; y < GRID_SIZE; y++)
+    for (int y = 0; y < renderer->size; y++)
     {
-        for (int x = 0; x < GRID_SIZE; x++)
+        for (int x = 0; x < renderer->size; x++)
         {
-            uint8_t bx = x * 2 + (20 - 2 * GRID_SIZE); // SCREENWIDTH in gb tiles
-            uint8_t by = y * 2 + (18 - 2 * GRID_SIZE); // SCREENHEIGHT in gb tiles
+            uint8_t bx = x * 2 + (20 - 2 * renderer->size); // SCREENWIDTH in gb tiles
+            uint8_t by = y * 2 + (18 - 2 * renderer->size); // SCREENHEIGHT in gb tiles
 
             if (y == 1) {
                 startTile = tiles_TILE_COUNT;

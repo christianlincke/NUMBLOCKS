@@ -10,15 +10,26 @@
  *
  */
 
-#include "defines.h"
 
 #include <stdint.h>
 
+// move directions
+typedef enum {
+    MOVE_NONE = 0,
+    MOVE_UP = 1,
+    MOVE_DOWN = 2,
+    MOVE_LEFT = 3,
+    MOVE_RIGHT = 4
+} MoveDirection;
+
 typedef struct
 {
-    int8_t cells[GRID_SIZE][GRID_SIZE];
+    int8_t cells[8][8];
     MoveDirection moveActive;
+    uint8_t size;
 } MoveFrame;
+
+void moveFrame_init(MoveFrame *frame, uint8_t gridSize);
 
 /**
  * @brief initialize / clear the move event
