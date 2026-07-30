@@ -12,6 +12,7 @@
 #include "tiles.h"
 #include "tiles_empty.h"
 #include "start_screen.h"
+#include "gameover.h"
 
 void showStartScreen(){
     // Load Background tiles and then map
@@ -41,10 +42,14 @@ void main(void)
     showStartScreen();
     initrand(sys_time);
 
-    SHOW_BKG;
+    // load tiles, empties and font
     set_bkg_data(0, tiles_TILE_COUNT, tiles_tiles);
-    set_bkg_data(tiles_TILE_COUNT, tiles_empty_TILE_COUNT, tiles_empty_tiles);
-    fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT);
+    set_bkg_data(tiles_TILE_COUNT, gameover_TILE_COUNT, gameover_tiles);
+    set_bkg_data(tiles_TILE_COUNT + gameover_TILE_COUNT, tiles_empty_TILE_COUNT, tiles_empty_tiles);
+
+    // fill screen
+    fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT + gameover_TILE_COUNT);
+    SHOW_BKG;
 
     // init Grid, MoveFrame and Renderer
     Grid grid;
@@ -116,6 +121,8 @@ void main(void)
         lastPushActive = moveFrame.moveActive;
 
         renderGrid(&renderer, &moveFrame);
+
+
         vsync();
     }
 }

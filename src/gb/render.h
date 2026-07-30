@@ -18,3 +18,10 @@ void rendererBegin(Renderer *renderer);
  * @param frame 
  */
 void renderGrid(Renderer *renderer, MoveFrame *frame);
+
+/**
+ * @brief show the score on screen
+ * 
+ * @param score the score (sum of all tiles)
+ */
+void renderScore(uint16_t score);
