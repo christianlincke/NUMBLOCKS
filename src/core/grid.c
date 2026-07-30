@@ -193,6 +193,9 @@ uint8_t grid_checkGameOver(Grid *grid)
     {
         for (uint8_t x = 0; x < grid->size; x++)
         {
+            if (grid->cells[y][x] == 0) {
+                return 0;
+            }
 
             if (x < grid->size - 1)
             {
