@@ -12,7 +12,7 @@ endif
 LCC = $(GBDK_HOME)/bin/lcc
 
 # include headers in /src
-LCCFLAGS += -Isrc -Ires
+LCCFLAGS += -Isrc -Ires 
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
