@@ -22,22 +22,21 @@ typedef enum {
     MOVE_RIGHT = 4
 } MoveDirection;
 
+/**
+ * @brief 
+ * @param merge 0 if there is no merge, 0x0F if tile is merged into, 0xF0 is tile moves and then merges into other tile
+ */
 typedef struct {
     uint8_t value;
-
-    uint8_t fromX;
-    uint8_t fromY;
-
-    uint8_t toX;
-    uint8_t toY;
-
+    int8_t dx;
+    int8_t dy;
     uint8_t merge;
 } TileMove;
 
 typedef struct
 {
-    int8_t cells[8][8];
-    MoveDirection moveActive;
+    int8_t cells[8][8]; // delete late
+    MoveDirection moveActive; // probably delete late
     TileMove moves[8][8];
     uint8_t size;
 } MoveFrame;

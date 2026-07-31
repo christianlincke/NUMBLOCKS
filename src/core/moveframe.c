@@ -2,10 +2,10 @@
 
 void tileMove_clear(TileMove *move) {
     move->value = 0;
-    move->fromX = 0;
-    move->fromY = 0;
-    move->toX = 0;
-    move->toY = 0;
+    // move->fromX = 0;
+    // move->fromY = 0;
+    move->dx = 0;
+    move->dy = 0;
     move->merge = 0;
 }
 
