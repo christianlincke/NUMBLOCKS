@@ -19,7 +19,7 @@ ifdef GBDK_DEBUG
 	LCCFLAGS += -debug -v
 endif
 
-PROJECTNAME    = 2048
+PROJECTNAME    = NUMBLOCKS
 
 # source directories
 COREDIR      := src/core
