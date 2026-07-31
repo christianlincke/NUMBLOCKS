@@ -2,6 +2,7 @@
 
 TODO savefile for scores
 TODO check score calculation (8x8 game had unusually high score)
+TODO 
 TODO architecture: in grid_move(): calculate completed move, then return MoveEvent containing vectors of tiles
      runGame() {
         ....
@@ -13,8 +14,8 @@ TODO architecture: in grid_move(): calculate completed move, then return MoveEve
         rendergrid(moveEvent)
      }
 
-     then moveEvent could be something like
-     struct {
+    MoveEvent could be something like
+    struct {
         uint8_t dx[8][8];
         uint8_t dy[8][8]; // could be simplified by encoding dx and dy into a single uint8_t
         uint8_t merge[8][8]; // tell renderer to play merge animation and remove cell from memory
