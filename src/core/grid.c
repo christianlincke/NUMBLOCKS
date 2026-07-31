@@ -10,10 +10,7 @@ typedef struct
 } DirectionVector;
 
 static const DirectionVector directions[] = {
-    [MOVE_UP] = {0, -1},
-    [MOVE_DOWN] = {0, 1},
-    [MOVE_LEFT] = {-1, 0},
-    [MOVE_RIGHT] = {1, 0}};
+    [MOVE_UP] = {0, -1}, [MOVE_DOWN] = {0, 1}, [MOVE_LEFT] = {-1, 0}, [MOVE_RIGHT] = {1, 0}};
 
 void grid_init(Grid *grid, uint8_t gridSize)
 {
@@ -52,28 +49,23 @@ void grid_prepare(Grid *grid)
 void grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
 {
     moveFrame_clear(frame);
+    memcpy(&frame->cells, &grid->cells, 64);
 
     // get direction Vectors (in which direction should each cell look at its neighbour?)
     int8_t dx = directions[dir].dx;
     int8_t dy = directions[dir].dy;
 
     // calc start and end positions and step size for each direction
-    uint8_t startX = dx > 0 ? (grid->size - 2) : dx < 0 ? 1
-                                                        : 0;
-    int8_t endX = dx > 0 ? -1 : dx < 0 ? grid->size
-                                       : grid->size; // not actually the end, just the point we dont want to reach
-    int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1
-                                        : 1;
+    uint8_t startX = dx > 0 ? (grid->size - 2) : dx < 0 ? 1 : 0;
+    int8_t endX = dx > 0 ? -1 : dx < 0 ? grid->size : grid->size;
+    int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1 : 1;
 
-    uint8_t startY = dy > 0 ? (grid->size - 2) : dy < 0 ? 1
-                                                        : 0;
-    int8_t endY = dy > 0 ? -1 : dy < 0 ? grid->size
-                                       : grid->size; // not actually the end, just the point we dont want to reach
-    int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1
-                                        : 1;
+    uint8_t startY = dy > 0 ? (grid->size - 2) : dy < 0 ? 1 : 0;
+    int8_t endY = dy > 0 ? -1 : dy < 0 ? grid->size : grid->size;
+    int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
 
     uint8_t moved = 0;
-    uint8_t round = 0; // needed for starting the while loop (and calculating the origin 
+    uint8_t round = 0; // needed for starting the while loop (and calculating the origin
 
     // interate rounds - a move consists of several consecutive sub-moves
     // only continue if there has been a change in this round
@@ -96,14 +88,14 @@ void grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
                 {
                     // NEW CODE
                     // check if this tile is coming from somewhere
-                    uint8_t originX = x + (round - 1) * - dx; // this might overflow in some cases?
-                    uint8_t originY = y + (round - 1) * - dy;
+                    uint8_t originX = x + (round - 1) * -dx; // this might overflow in some cases?
+                    uint8_t originY = y + (round - 1) * -dy;
                     TileMove *tileMoveOrigin = &frame->moves[originY][originX];
-                    tileMoveOrigin->value = grid->cells[y][x];
-                    
+                    frame->cells[originY][originX] = grid->cells[y][x];
+
                     tileMoveOrigin->dx = round * dx;
                     tileMoveOrigin->dy = round * dy;
-                    
+
                     // CORE CODE
                     grid->cells[ny][nx] = grid->cells[y][x];
                     grid->aux[ny][nx] = grid->aux[y][x];
@@ -111,24 +103,21 @@ void grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
                     grid->cells[y][x] = 0;
                     grid->aux[y][x] = 0;
 
-                    // OLD CODE
-                    frame->cells[ny][nx] = grid->cells[ny][nx];
-                    frame->cells[y][x] = 0; // for diff rendering
-                    frame->moveActive = dir;
-                    
                     moved = 1;
                 }
-                else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->aux[ny][nx] && !grid->aux[y][x])
+                else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] &&
+                         !grid->aux[ny][nx] && !grid->aux[y][x])
                 {
-                    // if the neighbouring cell isnt empty AND neighbouring cell is same value as this cell
-                    // AND none of the cell have already merged this turn, neighbour cell += 1
+                    // if the neighbouring cell isnt empty AND neighbouring cell is same value as
+                    // this cell AND none of the cell have already merged this turn, neighbour cell
+                    // += 1
 
                     // NEW CODE
-                    uint8_t originX = x + (round - 1) * - dx; // this might overflow in some cases?
-                    uint8_t originY = y + (round - 1) * - dy;
+                    uint8_t originX = x + (round - 1) * -dx; // this might overflow in some cases?
+                    uint8_t originY = y + (round - 1) * -dy;
                     TileMove *tileMoveOrigin = &frame->moves[originY][originX];
-                    tileMoveOrigin->value = grid->cells[y][x];
-                    
+                    frame->cells[originY][originX] = grid->cells[y][x];
+
                     tileMoveOrigin->dx = round * dx;
                     tileMoveOrigin->dy = round * dy;
                     tileMoveOrigin->merge = 0xF0;
@@ -139,26 +128,14 @@ void grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir)
                     grid->aux[ny][nx] = 1;
                     grid->cells[y][x] = 0;
 
-                    frame->cells[ny][nx] = grid->cells[ny][nx];
-                    frame->cells[y][x] = 0; // for diff rendering
-                    frame->moveActive = dir;
-
                     moved = 1;
                 }
-                else if (grid->cells[y][x] != 0 && frame->moves[y][x].dx == 0 && frame->moves[y][x].dy == 0 && round == 1) {
-                    frame->moves[y][x].value = grid->cells[y][x];
-                }
-
-                if (grid->cells[ny][nx] != 0 && frame->moves[ny][nx].dx == 0 && frame->moves[ny][nx].dy == 0 && round == 1) {
-                    frame->moves[ny][nx].value = grid->cells[ny][nx];
-                }
-
                 x += stepX;
             }
             y += stepY;
         }
-        
     }
+    grid_resetAux(grid);
 }
 
 /**
@@ -204,8 +181,6 @@ void grid_newCell(Grid *grid, MoveFrame *frame, const uint8_t numNewCells)
     // reset the grid.aux[]
     grid_resetAux(grid);
 
-    moveFrame_clear(frame);
-
     for (uint8_t i = 0; i < numNewCells; i++)
     {
 
@@ -218,7 +193,6 @@ void grid_newCell(Grid *grid, MoveFrame *frame, const uint8_t numNewCells)
             {
                 grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
                 frame->cells[y][x] = grid->cells[y][x];
-
                 break;
             }
             grid->aux[y][x] = 1;

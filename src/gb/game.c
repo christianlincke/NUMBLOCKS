@@ -117,45 +117,56 @@ uint16_t runGame(uint8_t gridSize)
     initrand(sys_time);
 
     // spawn two cells
-    grid_newCell(&grid, &moveFrame, 2);
-    renderGrid(&renderer, &moveFrame);
+    grid_newCell(&grid, &moveFrame, 1);
+    grid_newCell(&grid, &moveFrame, 1);
+    renderer_startAnimation(&renderer, &moveFrame);
+    renderer_draw(&renderer);
 
     uint8_t j = 0;
     uint8_t jMem = 0;
     MoveDirection dir;
 
     MoveDirection startMove = MOVE_NONE;
-    MoveDirection lastMoveActive = MOVE_NONE;
+
+    uint8_t moveActive = 0; // wait for animation to finish before drawing new cell
 
     while (1)
     {
         j = joypadDebounce(&jMem);
 
-        if (j & J_UP)
+        if (j & J_UP && !renderer.animating)
         {
-            dir = MOVE_UP;
             grid_prepare(&grid);
-            startMove = MOVE_UP;
+            grid_move(&grid, &moveFrame, MOVE_UP);
+            grid_newCell(&grid, &moveFrame, 1);
+            renderer_startAnimation(&renderer, &moveFrame);
+            moveActive = 1;
         }
-        else if (j & J_DOWN)
+        else if (j & J_DOWN && !renderer.animating)
         {
-            dir = MOVE_DOWN;
             grid_prepare(&grid);
-            startMove = MOVE_DOWN;
+            grid_move(&grid, &moveFrame, MOVE_DOWN);
+            grid_newCell(&grid, &moveFrame, 1);
+            renderer_startAnimation(&renderer, &moveFrame);
+            moveActive = 1;
         }
-        else if (j & J_LEFT)
+        else if (j & J_LEFT && !renderer.animating)
         {
-            dir = MOVE_LEFT;
             grid_prepare(&grid);
-            startMove = MOVE_LEFT;
+            grid_move(&grid, &moveFrame, MOVE_LEFT);
+            grid_newCell(&grid, &moveFrame, 1);
+            renderer_startAnimation(&renderer, &moveFrame);
+            moveActive = 1;
         }
-        else if (j & J_RIGHT)
+        else if (j & J_RIGHT && !renderer.animating)
         {
-            dir = MOVE_RIGHT;
             grid_prepare(&grid);
-            startMove = MOVE_RIGHT;
+            grid_move(&grid, &moveFrame, MOVE_RIGHT);
+            grid_newCell(&grid, &moveFrame, 1);
+            renderer_startAnimation(&renderer, &moveFrame);
+            moveActive = 1;
         }
-        else if (j & J_START)
+        else if (j & J_START && !renderer.animating)
         {
             uint8_t cont = gameMenu();
             if (!cont)
@@ -163,28 +174,13 @@ uint16_t runGame(uint8_t gridSize)
                 return grid_sumCells(&grid);
             }
         }
-        else
-        {
-            startMove = MOVE_NONE;
-        }
 
-        // new joypad input!
-        if (startMove != MOVE_NONE)
-        {
-            grid_move(&grid, &moveFrame, dir);
-        }
-
-        // move is done, make a new cell
-        if (lastMoveActive != MOVE_NONE)
-        {
+        if (moveActive && !renderer.animating) {
+            moveFrame_clear(&moveFrame);
             grid_newCell(&grid, &moveFrame, 1);
+            moveActive = 0;
+            renderer_drawNewCells(&renderer, &moveFrame);
         }
-
-        lastMoveActive = moveFrame.moveActive;
-
-        // render
-        renderGrid(&renderer, &moveFrame);
-        renderScore(&renderer, grid_sumCells(&grid));
 
         if (grid_checkGameOver(&grid))
         {
@@ -195,6 +191,11 @@ uint16_t runGame(uint8_t gridSize)
             }
             return grid_sumCells(&grid);
         }
+
+
+        renderer_update(&renderer);
+        renderer_draw(&renderer);
+        renderScore(&renderer, grid_sumCells(&grid));
         vsync();
     }
 }
