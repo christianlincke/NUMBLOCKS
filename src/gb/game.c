@@ -103,7 +103,7 @@ uint8_t gameMenu()
 
 uint16_t runGame(uint8_t gridSize)
 {
-    // init Grid, MoveFrame and Renderer
+    // init grid, MoveFrame and Renderer
     Grid grid;
     grid_init(&grid, gridSize);
 
@@ -111,20 +111,17 @@ uint16_t runGame(uint8_t gridSize)
     moveFrame_init(&moveFrame, gridSize);
 
     Renderer renderer;
-    rendererBegin(&renderer, gridSize);
+    renderer_init(&renderer, gridSize, &moveFrame);
 
     // init random
     initrand(sys_time);
 
     // spawn two cells
-    grid_newCell(&grid, &moveFrame, 1);
-    grid_newCell(&grid, &moveFrame, 1);
-    renderer_startAnimation(&renderer, &moveFrame);
-    renderer_draw(&renderer);
-
+    grid_newCell(&grid, &moveFrame, 2);
+    renderer_drawNewCells(&renderer, &moveFrame);
+    
     uint8_t j = 0;
     uint8_t jMem = 0;
-    MoveDirection dir;
 
     MoveDirection startMove = MOVE_NONE;
 
@@ -195,7 +192,7 @@ uint16_t runGame(uint8_t gridSize)
 
         renderer_update(&renderer);
         renderer_draw(&renderer);
-        renderScore(&renderer, grid_sumCells(&grid));
+        renderScore(grid_sumCells(&grid));
         vsync();
     }
 }

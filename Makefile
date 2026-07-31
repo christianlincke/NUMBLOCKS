@@ -12,7 +12,8 @@ endif
 LCC = $(GBDK_HOME)/bin/lcc
 
 # include headers in /src
-LCCFLAGS += -Isrc -Ires 
+LCCFLAGS += -Isrc -Ires -Wf--opt-code-size -Wf--max-allocs-per-node0
+
 
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG

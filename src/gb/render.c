@@ -67,11 +67,14 @@ void loadAssets()
     SHOW_BKG;
 }
 
-void rendererBegin(Renderer *renderer, uint8_t gridSize)
+void renderer_init(Renderer *renderer, uint8_t gridSize, MoveFrame *frame)
 {
     renderer->size = gridSize;
+    renderer->frame = *frame;
     fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, tiles_TILE_COUNT);
     SHOW_BKG;
+
+    
 }
 
 void drawTile(Renderer *renderer, uint8_t x, uint8_t y, uint8_t value)
@@ -113,11 +116,10 @@ void renderer_draw(Renderer *renderer)
         for (int x = 0; x < renderer->size; x++)
         {
 
-            if (renderer->frame.cells[y][x] == 0)
-            {
-                drawTile(renderer, x, y, 0);
-                continue;
-            }
+            // if (renderer->frame.cells[y][x] == 0)
+            // {
+            //     drawTile(renderer, x, y, 0);
+            // }
             TileMove *tile = &renderer->frame.moves[y][x];
 
             int drawX = x;
@@ -131,10 +133,6 @@ void renderer_draw(Renderer *renderer)
 
             drawTile(renderer, drawX, drawY, renderer->frame.cells[y][x]);
 
-            if (drawX != x || drawY != y)
-            {
-                drawTile(renderer, x, y, 0);
-            }
         }
     }
 }
@@ -145,11 +143,10 @@ void renderer_drawNewCells(Renderer *renderer, MoveFrame *frame)
     {
         for (int x = 0; x < renderer->size; x++)
         {
-            TileMove *tile = frame->cells[y][x];
+            uint8_t tile = frame->cells[y][x];
             if (tile != 0)
             {
                 drawTile(renderer, x, y, tile);
-                continue;
             }
         }
     }
@@ -215,7 +212,7 @@ void renderStartScreen()
     set_bkg_tiles(0, 0, 20, 18, start_screen_map);
 }
 
-void renderScore(Renderer *renderer, uint16_t score)
+void renderScore(uint16_t score)
 {
 
     char scoreString[16];
