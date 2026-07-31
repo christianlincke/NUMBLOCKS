@@ -46,14 +46,14 @@ void grid_prepare(Grid *grid);
  * @param dir direction
  * @return uint8_t 0 if push is completed, dir if there might be more to do
  */
-MoveFrame grid_move(Grid *grid, MoveDirection dir);
+void grid_move(Grid *grid, MoveFrame *frame, MoveDirection dir);
 
 /**
  * @brief adds an randomly selected empty sell with a random value (2 or 4)
  *
  * @param grid the grid
  */
-MoveFrame grid_newCell(Grid *grid, const uint8_t numNewCells);
+void grid_newCell(Grid *grid, MoveFrame *frame, const uint8_t numNewCells);
 
 /**
  * @brief calculate the sum of all cells

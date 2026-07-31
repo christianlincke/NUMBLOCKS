@@ -117,7 +117,7 @@ uint16_t runGame(uint8_t gridSize)
     initrand(sys_time);
 
     // spawn two cells
-    moveFrame = grid_newCell(&grid, 2);
+    grid_newCell(&grid, &moveFrame, 2);
     renderGrid(&renderer, &moveFrame);
 
     uint8_t j = 0;
@@ -125,7 +125,7 @@ uint16_t runGame(uint8_t gridSize)
     MoveDirection dir;
 
     MoveDirection startMove = MOVE_NONE;
-    MoveDirection lastPushActive = MOVE_NONE;
+    MoveDirection lastMoveActive = MOVE_NONE;
 
     while (1)
     {
@@ -158,7 +158,8 @@ uint16_t runGame(uint8_t gridSize)
         else if (j & J_START)
         {
             uint8_t cont = gameMenu();
-            if (!cont) {
+            if (!cont)
+            {
                 return grid_sumCells(&grid);
             }
         }
@@ -168,18 +169,18 @@ uint16_t runGame(uint8_t gridSize)
         }
 
         // new joypad input!
-        if (moveFrame.moveActive != MOVE_NONE || startMove != MOVE_NONE)
+        if (startMove != MOVE_NONE)
         {
-            moveFrame = grid_move(&grid, dir);
+            grid_move(&grid, &moveFrame, dir);
         }
 
         // move is done, make a new cell
-        if (moveFrame.moveActive == MOVE_NONE && lastPushActive != MOVE_NONE)
+        if (lastMoveActive != MOVE_NONE)
         {
-            moveFrame = grid_newCell(&grid, 1);
+            grid_newCell(&grid, &moveFrame, 1);
         }
 
-        lastPushActive = moveFrame.moveActive;
+        lastMoveActive = moveFrame.moveActive;
 
         // render
         renderGrid(&renderer, &moveFrame);
