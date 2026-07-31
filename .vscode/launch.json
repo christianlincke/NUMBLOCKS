@@ -5,7 +5,7 @@
             "type": "emulicious-debugger",
             "request": "launch",
             "name": "Launch in Emulicious",
-            "program": "${workspaceFolder}/build/gb/2048.gb",
+            "program": "${workspaceFolder}/build/gb/NUMBLOCKS.gb",
             "port": 58870,
             "stopOnEntry": true,
             "preLaunchTask": "Build ROM debug",
