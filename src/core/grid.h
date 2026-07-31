@@ -53,7 +53,7 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir);
  *
  * @param grid the grid
  */
-MoveFrame grid_newCell(Grid *grid);
+MoveFrame grid_newCell(Grid *grid, const uint8_t numNewCells);
 
 /**
  * @brief calculate the sum of all cells

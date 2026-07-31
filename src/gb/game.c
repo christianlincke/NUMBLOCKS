@@ -117,9 +117,7 @@ uint16_t runGame(uint8_t gridSize)
     initrand(sys_time);
 
     // spawn two cells
-    moveFrame = grid_newCell(&grid);
-    renderGrid(&renderer, &moveFrame);
-    moveFrame = grid_newCell(&grid);
+    moveFrame = grid_newCell(&grid, 2);
     renderGrid(&renderer, &moveFrame);
 
     uint8_t j = 0;
@@ -178,7 +176,7 @@ uint16_t runGame(uint8_t gridSize)
         // move is done, make a new cell
         if (moveFrame.moveActive == MOVE_NONE && lastPushActive != MOVE_NONE)
         {
-            moveFrame = grid_newCell(&grid);
+            moveFrame = grid_newCell(&grid, 1);
         }
 
         lastPushActive = moveFrame.moveActive;

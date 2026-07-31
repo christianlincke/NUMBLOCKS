@@ -15,7 +15,6 @@ static const DirectionVector directions[] = {
     [MOVE_LEFT] = {-1, 0},
     [MOVE_RIGHT] = {1, 0}};
 
-
 void grid_init(Grid *grid, uint8_t gridSize)
 {
     grid->size = gridSize;
@@ -61,14 +60,14 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
 
     // calc start and end positions and step size for each direction
     uint8_t startX = dx > 0 ? (grid->size - 2) : dx < 0 ? 1
-                                         : 0;
+                                                        : 0;
     int8_t endX = dx > 0 ? -1 : dx < 0 ? grid->size
                                        : grid->size; // not actually the end, just the point we dont want to reach
     int8_t stepX = dx > 0 ? -1 : dx < 0 ? 1
                                         : 1;
 
     uint8_t startY = dy > 0 ? (grid->size - 2) : dy < 0 ? 1
-                                         : 0;
+                                                        : 0;
     int8_t endY = dy > 0 ? -1 : dy < 0 ? grid->size
                                        : grid->size; // not actually the end, just the point we dont want to reach
     int8_t stepY = dy > 0 ? -1 : dy < 0 ? 1
@@ -98,8 +97,6 @@ MoveFrame grid_move(Grid *grid, MoveDirection dir)
                 frame.cells[ny][nx] = grid->cells[ny][nx];
                 frame.cells[y][x] = 0; // for diff rendering
                 frame.moveActive = dir;
-
-                
             }
             else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] && !grid->aux[ny][nx] && !grid->aux[y][x])
             {
@@ -160,7 +157,7 @@ uint8_t grid_sumAux(Grid *grid)
     return sum;
 }
 
-MoveFrame grid_newCell(Grid *grid)
+MoveFrame grid_newCell(Grid *grid, const uint8_t numNewCells)
 {
     // reset the grid.aux[]
     grid_resetAux(grid);
@@ -168,19 +165,23 @@ MoveFrame grid_newCell(Grid *grid)
     MoveFrame frame;
     moveFrame_init(&frame, grid->size);
 
-    while (grid_sumAux(grid) < (grid->size * grid->size))
+    for (uint8_t i = 0; i < numNewCells; i++)
     {
-        uint8_t x = (uint8_t)(random_byte() % grid->size);
-        uint8_t y = (uint8_t)(random_byte() % grid->size);
 
-        if (grid->cells[y][x] == 0)
+        while (grid_sumAux(grid) < (grid->size * grid->size))
         {
-            grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
-            frame.cells[y][x] = grid->cells[y][x];
+            uint8_t x = (uint8_t)(random_byte() % grid->size);
+            uint8_t y = (uint8_t)(random_byte() % grid->size);
 
-            return frame;
+            if (grid->cells[y][x] == 0)
+            {
+                grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
+                frame.cells[y][x] = grid->cells[y][x];
+
+                break;
+            }
+            grid->aux[y][x] = 1;
         }
-        grid->aux[y][x] = 1;
     }
     grid_resetAux(grid);
     return frame;
@@ -193,7 +194,8 @@ uint8_t grid_checkGameOver(Grid *grid)
     {
         for (uint8_t x = 0; x < grid->size; x++)
         {
-            if (grid->cells[y][x] == 0) {
+            if (grid->cells[y][x] == 0)
+            {
                 return 0;
             }
 
