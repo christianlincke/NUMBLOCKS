@@ -2,7 +2,6 @@
 
 TODO savefile for scores
 TODO check score calculation (8x8 game had unusually high score)
-TODO 
 TODO architecture: in grid_move(): calculate completed move, then return MoveEvent containing vectors of tiles
      runGame() {
         ....
@@ -21,6 +20,7 @@ TODO architecture: in grid_move(): calculate completed move, then return MoveEve
         uint8_t merge[8][8]; // tell renderer to play merge animation and remove cell from memory
         uint8_t spawn[8][8]; // could be simplified by encoding x and y into a single uint8_t
      }
+TODO actually, the design was better before - have grid_move calculate inivudual steps, pass them to renderer. then focus on making grid_move() more efficient
 
 
 ## Nice to have
