@@ -9,3 +9,6 @@ typedef struct {
     uint8_t index;
 } Menu;
 
+uint8_t mainMenu();
+
+uint8_t gameMenu();

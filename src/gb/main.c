@@ -1,17 +1,9 @@
-// GBDK
-#include <gb/gb.h>
-#include <gbdk/console.h>
-#include <gbdk/font.h>
 
-// game stuff
-
-#include "game.h"
-#include "render.h"
+#include "core/game.h"
+#include "core/render.h"
 
 void main(void)
 {
-    SHOW_BKG;
-
     startScreen();
     loadAssets();
 

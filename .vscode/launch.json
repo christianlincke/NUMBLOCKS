@@ -24,7 +24,7 @@
             "name": "Debug CLI",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/build/cli/2048",
+            "program": "${workspaceFolder}/build/cli/NUMBLOCKS",
             "args": [],
             "cwd": "${workspaceFolder}/src/cli",
             "preLaunchTask": "Build CLI"

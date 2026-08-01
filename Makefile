@@ -12,7 +12,8 @@ endif
 LCC = $(GBDK_HOME)/bin/lcc
 
 # include headers in /src
-LCCFLAGS += -Isrc -Ires -Wf--opt-code-size -Wf--max-allocs-per-node0
+LCCFLAGS += -Isrc -Ires -DTARGET_GB
+CLIFLAGS += -DTARGET_CLI
 
 
 # GBDK_DEBUG = ON
@@ -72,7 +73,7 @@ $(GBOBJDIR)/%.o: %.c
 
 cli:
 	mkdir -p build/cli
-	gcc -g -O0 $(CORESOURCES) $(CLISOURCES) -Isrc -o build/cli/$(PROJECTNAME)
+	gcc -g -O0 $(CORESOURCES) $(CLISOURCES) $(CLIFLAGS) -Isrc -o build/cli/$(PROJECTNAME)
 
 test:
 	mkdir -p build/test

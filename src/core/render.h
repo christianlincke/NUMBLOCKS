@@ -2,6 +2,7 @@
 
 #include "core/moveframe.h"
 #include "menu.h"
+#include "display.h"
 
 typedef struct
 {
@@ -16,8 +17,6 @@ typedef struct
 } Renderer;
 
 
-void loadAssets();
-
 void renderer_init(Renderer *renderer, uint8_t gridSize, MoveFrame *frame);
 
 void renderer_startAnimation(Renderer *renderer, MoveFrame *frame);
@@ -29,9 +28,5 @@ void renderer_draw(Renderer *renderer);
 void renderer_drawNewCells(Renderer *renderer, MoveFrame *frame);
 
 void renderGameOverAnimation(Renderer *renderer);
-
-void renderStartScreen();
-
-void renderScore(uint16_t score);
 
 void renderMenu(Menu *menu, uint8_t x, uint8_t y);

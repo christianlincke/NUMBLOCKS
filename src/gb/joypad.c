@@ -1,4 +1,4 @@
-#include "joypad.h"
+#include "core/joypad.h"
 
 #include <gb/gb.h>
 
