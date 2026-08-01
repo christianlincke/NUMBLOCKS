@@ -77,6 +77,7 @@ void showStartScreen()
     // Load Background tiles and then map
     set_bkg_data(0, start_screen_TILE_COUNT, start_screen_tiles);
     set_bkg_tiles(0, 0, 20, 18, start_screen_map);
+    SHOW_BKG;
 }
 
 void clearScreen() {

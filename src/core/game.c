@@ -13,7 +13,7 @@
 #include "core/joypad.h"
 #include "core/menu.h"
 #include "core/render.h"
-#include "display.h"
+#include "core/display.h"
 
 void startScreen()
 {
