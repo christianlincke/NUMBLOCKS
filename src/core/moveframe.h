@@ -23,14 +23,18 @@ typedef enum {
 } MoveDirection;
 
 /**
- * @brief 
- * @param merge 0 if there is no merge, 0x0F if tile is merged into, 0xF0 is tile moves and then merges into other tile
+ * @brief encoded data for tile, containing dx, dy and merge
+ * 0bMMMMYYXX
+ * MMMM is MERGE
+ * 0000 for no merge
+ * 0011 (hex 3) for merge into
+ * 1100 (hex C) for tile that moves and then merges into other tile
+ * YY is dY, XX is dX
+ * 00 for 0
+ * 10 for -1
+ * 01 for 1
  */
-typedef struct {
-    int8_t dx;
-    int8_t dy;
-    uint8_t merge;
-} TileMove;
+typedef uint8_t TileMove;  
 
 typedef struct
 {
@@ -38,12 +42,6 @@ typedef struct
     TileMove moves[8][8];
     uint8_t size;
 } MoveFrame;
-
-/**
- * @brief clear a TileMove object
- * 
- */
-void tileMove_clear(TileMove *move);
 
 /**
  * @brief initialize move frame object

@@ -88,8 +88,9 @@ void grid_move(Grid *grid)
                 grid->aux[y][x] = 0;
 
                 // NEW CODE
-                grid->frame->moves[y][x].dx = dx;
-                grid->frame->moves[y][x].dy = dy;
+                grid->frame->moves[y][x] |= (dx >> 6) | dx;
+                grid->frame->moves[y][x] |= (dy >> 4) | (dy << 2);
+                grid->frame->moves[y][x] &= 0x0F;
                 grid->frame->moveActive = dir;
 
                 moved = 1;
@@ -107,10 +108,11 @@ void grid_move(Grid *grid)
                 grid->cells[y][x] = 0;
 
                 // NEW CODE
-                grid->frame->moves[y][x].merge = 0xF0;
-                grid->frame->moves[nx][ny].merge = 0x0F;
-                grid->frame->moves[y][x].dx = dx;
-                grid->frame->moves[y][x].dy = dy;
+                grid->frame->moves[y][x] &= 0xCF;
+                grid->frame->moves[nx][ny] &= 0x3F;
+                
+                grid->frame->moves[y][x] |= (dx >> 6) | dx;
+                grid->frame->moves[y][x] |= (dy >> 4) | (dy << 2);
                 grid->frame->moveActive = dir;
 
                 moved = 1;
