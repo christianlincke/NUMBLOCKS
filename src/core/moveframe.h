@@ -34,8 +34,7 @@ typedef struct {
 
 typedef struct
 {
-    int8_t cells[8][8];
-    MoveDirection moveActive; // probably delete late
+    MoveDirection moveActive;
     TileMove moves[8][8];
     uint8_t size;
 } MoveFrame;

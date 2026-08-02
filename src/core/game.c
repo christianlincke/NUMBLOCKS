@@ -9,11 +9,11 @@
 #include <unistd.h>
 #endif
 
+#include "core/display.h"
 #include "core/grid.h"
 #include "core/joypad.h"
 #include "core/menu.h"
 #include "core/render.h"
-#include "core/display.h"
 
 void startScreen()
 {
@@ -31,14 +31,14 @@ void startScreen()
 uint16_t runGame(uint8_t gridSize)
 {
     // init grid, MoveFrame and Renderer
-    Grid grid;
-    grid_init(&grid, gridSize);
-
     MoveFrame moveFrame;
     moveFrame_init(&moveFrame, gridSize);
 
+    Grid grid;
+    grid_init(&grid, &moveFrame, gridSize);
+
     Renderer renderer;
-    renderer_init(&renderer, gridSize, &moveFrame);
+    renderer_init(&renderer, &grid, &moveFrame);
 
     // init random
 #ifdef TARGET_GB
@@ -46,51 +46,41 @@ uint16_t runGame(uint8_t gridSize)
 #endif
 
     // spawn two cells
-    grid_newCell(&grid, &moveFrame, 2);
-    renderer_drawNewCells(&renderer, &moveFrame);
+    grid_newCell(&grid, 2);
+    renderer_draw(&renderer);
 
     uint8_t j = 0;
     uint8_t jMem = 0;
 
-    MoveDirection startMove = MOVE_NONE;
+    uint8_t moveActive = 0;
 
-    uint8_t moveActive = 0; // wait for animation to finish before drawing new cell
+    uint8_t gameOver = 0;
 
     while (1)
     {
+        // get input
         j = joypadDebounce(&jMem);
 
-        if (j & J_UP && !renderer.animating)
+        // set currMove and prepeare grid
+        if (j & J_UP && !renderer.animating && !moveActive && !gameOver)
         {
+            moveFrame.moveActive = MOVE_UP;
             grid_prepare(&grid);
-            grid_move(&grid, &moveFrame, MOVE_UP);
-            grid_newCell(&grid, &moveFrame, 1);
-            renderer_startAnimation(&renderer, &moveFrame);
-            moveActive = 1;
         }
-        else if (j & J_DOWN && !renderer.animating)
+        else if (j & J_DOWN && !renderer.animating && !moveActive && !gameOver)
         {
+            moveFrame.moveActive = MOVE_DOWN;
             grid_prepare(&grid);
-            grid_move(&grid, &moveFrame, MOVE_DOWN);
-            grid_newCell(&grid, &moveFrame, 1);
-            renderer_startAnimation(&renderer, &moveFrame);
-            moveActive = 1;
         }
-        else if (j & J_LEFT && !renderer.animating)
+        else if (j & J_LEFT && !renderer.animating && !moveActive && !gameOver)
         {
+            moveFrame.moveActive = MOVE_LEFT;
             grid_prepare(&grid);
-            grid_move(&grid, &moveFrame, MOVE_LEFT);
-            grid_newCell(&grid, &moveFrame, 1);
-            renderer_startAnimation(&renderer, &moveFrame);
-            moveActive = 1;
         }
-        else if (j & J_RIGHT && !renderer.animating)
+        else if (j & J_RIGHT && !renderer.animating && !moveActive && !gameOver)
         {
+            moveFrame.moveActive = MOVE_RIGHT;
             grid_prepare(&grid);
-            grid_move(&grid, &moveFrame, MOVE_RIGHT);
-            grid_newCell(&grid, &moveFrame, 1);
-            renderer_startAnimation(&renderer, &moveFrame);
-            moveActive = 1;
         }
         else if (j & J_START && !renderer.animating)
         {
@@ -100,31 +90,34 @@ uint16_t runGame(uint8_t gridSize)
                 return grid_sumCells(&grid);
             }
         }
-
-        if (moveActive && !renderer.animating)
+        else if (j & J_START && !renderer.animating && gameOver)
         {
-            moveFrame_clear(&moveFrame);
-            grid_newCell(&grid, &moveFrame, 1);
-            moveActive = 0;
-            renderer_drawNewCells(&renderer, &moveFrame);
+            return grid_sumCells(&grid);
         }
 
+        // move the cell
+        if (moveFrame.moveActive && !renderer.animating)
+        {
+            grid_move(&grid);
+        }
 
-        // if (grid_checkGameOver(&grid))
-        // {
-        //     renderGameOverAnimation(&renderer);
-        //     while (!(joypad() & J_START))
-        //     {
+        if (moveActive && !moveFrame.moveActive && !renderer.animating)
+        {
+            moveFrame_clear(&moveFrame);
+            grid_newCell(&grid, 1);
+            moveActive = 0;
+        }
 
-        //         vsync();
-        //     }
-        //     return grid_sumCells(&grid);
-        // }
+        if (!moveActive && !gameOver && !renderer.animating)
+        {
+            gameOver = grid_checkGameOver(&grid);
+        }
 
+        moveActive = moveFrame.moveActive;
 
-        renderer_update(&renderer);
+        // renderer_update(&renderer);
         renderer_draw(&renderer);
-        // renderScore(grid_sumCells(&grid));
+        renderScore(grid_sumCells(&grid));
 
 #ifdef TARGET_GB
         vsync();

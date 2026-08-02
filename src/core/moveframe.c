@@ -15,7 +15,6 @@ void moveFrame_clear(MoveFrame *frame) {
     frame->moveActive = MOVE_NONE;
     for (uint8_t y = 0; y < frame->size; y++) {
         for (uint8_t x = 0; x < frame->size; x++) {
-            frame->cells[y][x] = 0;
             tileMove_clear(&frame->moves[y][x]);
         }
     }

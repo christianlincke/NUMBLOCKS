@@ -88,28 +88,6 @@ void showBackground() {
     SHOW_BKG;
 }
 
-void renderScore(uint16_t score)
-{
-    char scoreString[16];
-    sprintf(scoreString, "Score: %d", score);
-
-    uint8_t index = 0;
-    uint8_t tile = 0;
-    while (scoreString[index] != '\0')
-    {
-        char c = scoreString[index];
-
-        tile = getTileAddress(c);
-
-        uint8_t bx = index;
-
-        uint8_t *vramAddress = get_bkg_xy_addr(bx, 17); // always print in the lowest line
-
-        set_vram_byte(vramAddress++, tile);
-        index++;
-    }
-}
-
 void printString(uint8_t x, uint8_t y, const char *text)
 {
     uint8_t tile = 0;

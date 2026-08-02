@@ -6,20 +6,24 @@
 
 #define GAME_OVER_ANIMATION_SPEED 30 // vsyncs per tile
 
-void renderer_init(Renderer *renderer, uint8_t gridSize, MoveFrame *frame)
+void renderer_init(Renderer *renderer, Grid *grid, MoveFrame *frame)
 {
-    renderer->size = gridSize;
-    renderer->frame = *frame;
+    renderer->grid = grid;
+    renderer->size = renderer->grid->size;
+    renderer->frame = frame;
+
+    renderer->animationFrame = 0;
+    renderer->animationLength = 2;
+    renderer->animating = 0;
+
     clearScreen();
     showBackground();
 }
 
-void renderer_startAnimation(Renderer *renderer, MoveFrame *frame)
+void renderer_startAnimation(Renderer *renderer)
 {
-    renderer->frame = *frame;
-
     renderer->animationFrame = 0;
-    renderer->animationLength = 8;
+    renderer->animationLength = 2;
     renderer->animating = 1;
 }
 
@@ -42,92 +46,50 @@ void renderer_draw(Renderer *renderer)
     {
         for (int x = 0; x < renderer->size; x++)
         {
+            // int drawX = x;
+            // int drawY = y;
 
-            TileMove *tile = &renderer->frame.moves[y][x];
+            // TileMove *tile = &renderer->frame.moves[y][x];
+            // if (renderer->animating)
+            // {
+            //     drawX += tile->dx * renderer->animationFrame;
+            //     drawY += tile->dy * renderer->animationFrame;
+            // }
 
-            int drawX = x;
-            int drawY = y;
-
-            if (renderer->animating)
-            {
-                drawX += tile->dx * renderer->animationFrame / renderer->animationLength;
-                drawY += tile->dy * renderer->animationFrame / renderer->animationLength;
-            }
-
-            drawTile(renderer->size, drawX, drawY, renderer->frame.cells[y][x]);
+            // drawTile(renderer->size, drawX, drawY, renderer->frame.cells[y][x]);
+            drawTile(renderer->size, x, y, renderer->grid->cells[y][x]);
         }
     }
 }
 
-void renderer_drawNewCells(Renderer *renderer, MoveFrame *frame)
-{
-    for (int y = 0; y < renderer->size; y++)
-    {
-        for (int x = 0; x < renderer->size; x++)
-        {
-            uint8_t tile = frame->cells[y][x];
-            if (tile != 0)
-            {
-                drawTile(renderer->size, x, y, tile);
-            }
-        }
-    }
-}
-
-/*
 void renderGameOverAnimation(Renderer *renderer)
 {
-    uint8_t startTile;
-    uint8_t counter;
-    uint8_t tileMap0[4] = {0, 2, 1, 3};
+    moveFrame_clear(renderer->frame);
+    renderer->grid->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)(renderer->size - 4) / 2] =
+        16; // G
+    renderer->grid
+        ->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)1 + (renderer->size - 4) / 2] = 17; // A
+    renderer->grid
+        ->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)2 + (renderer->size - 4) / 2] = 18; // M
+    renderer->grid
+        ->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)3 + (renderer->size - 4) / 2] = 19; // A
 
-    // before we do anything else, lets wait for a second
-    counter = 0;
-    while (counter < 60)
-    {
-        counter++;
-        vsync();
-    }
-    counter = 0;
+    renderer->grid
+        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)(renderer->size - 4) / 2] = 20; // O
+    renderer->grid
+        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)1 + (renderer->size - 4) / 2] =
+        21; // V
+    renderer->grid
+        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)2 + (renderer->size - 4) / 2] =
+        22; // E
+    renderer->grid
+        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)3 + (renderer->size - 4) / 2] =
+        23; // R
 
-    // first line all empty
-    for (int y = 0; y < renderer->size; y++)
-    {
-        for (int x = 0; x < renderer->size; x++)
-        {
-            uint8_t bx = x * 2 + ((20 - 2 * renderer->size) / 2); // SCREENWIDTH in gb tiles
-            uint8_t by = y * 2 + ((18 - 2 * renderer->size) / 2); // SCREENHEIGHT in gb tiles
-
-            if (y == 1)
-            {
-                startTile = 0x40;
-                uint8_t tileMap[] = {x * 4 + startTile + 0, x * 4 + startTile + 2,
-                                     x * 4 + startTile + 1, x * 4 + startTile + 3};
-                set_bkg_tiles(bx, by, 2, 2, tileMap);
-            }
-            else if (y == 2)
-            {
-                startTile = 0x50;
-                uint8_t tileMap[] = {x * 4 + startTile + 0, x * 4 + startTile + 2,
-                                     x * 4 + startTile + 1, x * 4 + startTile + 3};
-                set_bkg_tiles(bx, by, 2, 2, tileMap);
-            }
-            else
-            {
-                uint8_t tileMap0[] = {0, 2, 1, 3};
-                set_bkg_tiles(bx, by, 2, 2, tileMap0);
-            }
-
-            counter = 0;
-            while (counter < GAME_OVER_ANIMATION_SPEED)
-            {
-                counter++;
-                vsync();
-            }
-        }
-    }
+    renderer->animationFrame = 0;
+    renderer->animationLength = 2;
+    renderer->animating = 1;
 }
-    */
 
 void renderMenu(Menu *menu, uint8_t x, uint8_t y)
 {
@@ -149,4 +111,12 @@ void renderMenu(Menu *menu, uint8_t x, uint8_t y)
 
         printString(x, y + i, optionString);
     }
+}
+
+void renderScore(uint16_t score)
+{
+    char scoreString[18];
+    sprintf(scoreString, "Score: %d", score);
+    scoreString[sizeof(scoreString) - 1] = '\0';
+    printString(0, 17, scoreString);
 }
