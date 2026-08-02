@@ -137,14 +137,12 @@ void renderMenu(Menu *menu, uint8_t x, uint8_t y)
 
         if (menu->index == i)
         {
-            optionString[0] = '>';
+            sprintf(optionString, ">%s", menu->options[i]);
         }
         else
         {
-            optionString[0] = ' ';
+            sprintf(optionString, " %s", menu->options[i]);
         }
-
-        strncpy(optionString, menu->options[i], sizeof(optionString) - 1);
 
         // Ensure null termination
         optionString[sizeof(optionString) - 1] = '\0';

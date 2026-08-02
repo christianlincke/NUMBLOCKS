@@ -114,9 +114,9 @@ void printString(uint8_t x, uint8_t y, const char *text)
 {
     uint8_t tile = 0;
     uint8_t charIndex = 0;
+    uint8_t *vramAddress = get_bkg_xy_addr(x, y);
     while (text[charIndex] != '\0')
         {
-            uint8_t *vramAddress = get_bkg_xy_addr(x, y);
             char c = text[charIndex];
             tile = getTileAddress(c);
             set_vram_byte(vramAddress++, tile);
