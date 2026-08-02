@@ -20,7 +20,7 @@ UTEST(MoveFrame, singleMoveFrameTest)
     TileMove move = frame.moves[3][0];
     ASSERT_EQ(move.dx, 0);
     ASSERT_EQ(move.dy, -3);
-    ASSERT_EQ(move.value, 1);
+    ASSERT_EQ(frame.cells[3][0], 1);
 
     grid_init(&grid, 4);
     grid.cells[2][2] = 1;
@@ -29,7 +29,7 @@ UTEST(MoveFrame, singleMoveFrameTest)
     move = frame.moves[2][2];
     ASSERT_EQ(move.dx, -2);
     ASSERT_EQ(move.dy, 0);
-    ASSERT_EQ(move.value, 1);
+    ASSERT_EQ(frame.cells[2][2], 1);
 
     grid_init(&grid, 4);
     grid.cells[3][3] = 4;
