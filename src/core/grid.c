@@ -1,6 +1,7 @@
 #include "grid.h"
 
 #include "random_byte.h"
+
 #include <string.h>
 
 typedef struct
@@ -153,14 +154,17 @@ MoveDirection grid_move(Grid *grid)
  * @param grid
  * @return uint8_t
  */
-uint16_t grid_sumCells(Grid *grid)
+uint16_t grid_calcScore(const Grid *grid)
 {
     uint16_t sum = 0;
     for (uint8_t y = 0; y < grid->size; y++)
     {
         for (uint8_t x = 0; x < grid->size; x++)
         {
-            sum += grid->cells[y][x];
+            if (grid->cells[y][x] > 0) {
+                sum += 1 << grid->cells[y][x];
+            }
+            
         }
     }
     return sum;
