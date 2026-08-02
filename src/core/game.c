@@ -53,6 +53,7 @@ uint16_t runGame(uint8_t gridSize)
     uint8_t jMem = 0;
 
     uint8_t moveActive = 0;
+    uint8_t prevMove = 0;
 
     uint8_t gameOver = 0;
 
@@ -64,23 +65,23 @@ uint16_t runGame(uint8_t gridSize)
         // set currMove and prepeare grid
         if (j & J_UP && !renderer.animating && !moveActive && !gameOver)
         {
-            moveFrame.moveActive = MOVE_UP;
-            grid_prepare(&grid);
+            moveActive = MOVE_UP;
+            grid_prepare(&grid, MOVE_UP);
         }
         else if (j & J_DOWN && !renderer.animating && !moveActive && !gameOver)
         {
-            moveFrame.moveActive = MOVE_DOWN;
-            grid_prepare(&grid);
+            moveActive = MOVE_DOWN;
+            grid_prepare(&grid, MOVE_DOWN);
         }
         else if (j & J_LEFT && !renderer.animating && !moveActive && !gameOver)
         {
-            moveFrame.moveActive = MOVE_LEFT;
-            grid_prepare(&grid);
+            moveActive = MOVE_LEFT;
+            grid_prepare(&grid, MOVE_LEFT);
         }
         else if (j & J_RIGHT && !renderer.animating && !moveActive && !gameOver)
         {
-            moveFrame.moveActive = MOVE_RIGHT;
-            grid_prepare(&grid);
+            moveActive = MOVE_RIGHT;
+            grid_prepare(&grid, MOVE_RIGHT);
         }
         else if (j & J_START && !renderer.animating)
         {
@@ -96,12 +97,12 @@ uint16_t runGame(uint8_t gridSize)
         }
 
         // move the cell
-        if (moveFrame.moveActive && !renderer.animating)
+        if (moveActive && !renderer.animating)
         {
-            grid_move(&grid);
+            moveActive = grid_move(&grid);
         }
 
-        if (moveActive && !moveFrame.moveActive && !renderer.animating)
+        if (prevMove && !moveActive && !renderer.animating)
         {
             moveFrame_clear(&moveFrame);
             grid_newCell(&grid, 1);
@@ -113,7 +114,8 @@ uint16_t runGame(uint8_t gridSize)
             gameOver = grid_checkGameOver(&grid);
         }
 
-        moveActive = moveFrame.moveActive;
+        prevMove = moveActive;
+
 
         // renderer_update(&renderer);
         renderer_draw(&renderer);
