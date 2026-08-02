@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 // joypad defines for cli target
-#ifdef TARGET_CLI
+#ifndef TARGET_GB
 #define J_RIGHT 0x01
 #define J_LEFT 0x02
 #define J_UP 0x04
