@@ -39,7 +39,7 @@ CORESOURCES := $(wildcard $(COREDIR)/*.c)
 GBSOURCES   := $(wildcard $(GBDIR)/*.c)
 CLISOURCES  := $(wildcard $(CLIDIR)/*.c)
 RESSOURCES  := $(wildcard $(RESDIR)/*.c)
-TESTSOURCES := $(wildcard $(TESTDIR)/*.c)
+TESTSOURCES := $(wildcard $(TESTDIR)/*.c) $(filter-out $(CLIDIR)/main.c, $(wildcard $(CLIDIR)/*.c))
 
 ASMSOURCES := $(wildcard $(COREDIR)/*.s) \
               $(wildcard $(GBDIR)/*.s)
