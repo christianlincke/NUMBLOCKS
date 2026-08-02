@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 
+static const uint8_t gridOffsetX[] = {[4] = 6, [5] = 5, [6] = 4, [7] = 3, [8] = 2}; // (20 - 2 * gridSize) / 2
+static const uint8_t gridOffsetY[] = {[4] = 5, [5] = 4, [6] = 3, [7] = 2, [8] = 1}; // (18 - 2 * gridSize) / 2
 
 void loadAssets()
 {
@@ -62,11 +64,11 @@ uint8_t getTileAddress(const char c)
     return address;
 }
 
-void drawTile(uint8_t gridSize, uint8_t x, uint8_t y, uint8_t value)
+void drawTile(const uint8_t gridSize, const uint8_t x, const uint8_t y, const uint8_t value)
 {
     uint8_t tileStartAdress = 4 * value;
-    uint8_t bx = x * 2 + (20 - 2 * gridSize) / 2; // 20 = SCREENWIDTH in gb tiles
-    uint8_t by = y * 2 + (18 - 2 * gridSize) / 2; // 18 = SCREENHEIGHT in gb tiles
+    uint8_t bx = x * 2 + gridOffsetX[gridSize];
+    uint8_t by = y * 2 + gridOffsetY[gridSize]; 
     uint8_t map[] = {tileStartAdress, tileStartAdress + 2, tileStartAdress + 1,
                      tileStartAdress + 3};
     set_bkg_tiles(bx, by, 2, 2, map);
@@ -80,11 +82,13 @@ void showStartScreen()
     SHOW_BKG;
 }
 
-void clearScreen() {
+void clearScreen()
+{
     fill_bkg_rect(0, 0, DEVICE_SCREEN_WIDTH, DEVICE_SCREEN_HEIGHT, 0x80);
 }
 
-void showBackground() {
+void showBackground()
+{
     SHOW_BKG;
 }
 
@@ -94,10 +98,10 @@ void printString(uint8_t x, uint8_t y, const char *text)
     uint8_t charIndex = 0;
     uint8_t *vramAddress = get_bkg_xy_addr(x, y);
     while (text[charIndex] != '\0')
-        {
-            char c = text[charIndex];
-            tile = getTileAddress(c);
-            set_vram_byte(vramAddress++, tile);
-            charIndex++;
-        }
+    {
+        char c = text[charIndex];
+        tile = getTileAddress(c);
+        set_vram_byte(vramAddress++, tile);
+        charIndex++;
+    }
 }

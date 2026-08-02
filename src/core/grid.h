@@ -49,14 +49,14 @@ void moveData_clear(MoveData *moveData);
  *
  * @param grid
  */
-void grid_init(Grid *grid, MoveFrame *frame, uint8_t gridSize);
+void grid_init(Grid *grid, MoveFrame *frame, const uint8_t gridSize);
 
 /**
  * @brief prepare for a new move
  *
  * @param grid
  */
-void grid_prepare(Grid *grid, MoveDirection moveDir);
+void grid_prepare(Grid *grid, const MoveDirection moveDir);
 
 /**
  * @brief push all cells in the grid into direction dir
@@ -80,7 +80,7 @@ void grid_newCell(Grid *grid, const uint8_t numNewCells);
  * @param grid
  * @return int16_t sum of all the cells
  */
-uint16_t grid_sumCells(Grid *grid);
+uint16_t grid_calcScore(const Grid *grid);
 
 /**
  * @brief checks whether there are any possible moves

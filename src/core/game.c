@@ -28,16 +28,16 @@ void startScreen()
     }
 }
 
-uint16_t runGame(uint8_t gridSize)
+uint16_t runGame(const uint8_t gridSize)
 {
     // init grid, MoveFrame and Renderer
-    MoveFrame moveFrame;
+    static MoveFrame moveFrame;
     moveFrame_init(&moveFrame, gridSize);
 
-    Grid grid;
+    static Grid grid;
     grid_init(&grid, &moveFrame, gridSize);
 
-    Renderer renderer;
+    static Renderer renderer;
     renderer_init(&renderer, &grid, &moveFrame);
 
     // init random
@@ -88,12 +88,12 @@ uint16_t runGame(uint8_t gridSize)
             uint8_t cont = gameMenu();
             if (!cont)
             {
-                return grid_sumCells(&grid);
+                return grid_calcScore(&grid);
             }
         }
         else if (j & J_START && !renderer.animating && gameOver)
         {
-            return grid_sumCells(&grid);
+            return grid_calcScore(&grid);
         }
 
         // move the cell
@@ -116,10 +116,9 @@ uint16_t runGame(uint8_t gridSize)
 
         prevMove = moveActive;
 
-
         // renderer_update(&renderer);
         renderer_draw(&renderer);
-        renderScore(grid_sumCells(&grid));
+        renderScore(grid_calcScore(&grid));
 
 #ifdef TARGET_GB
         vsync();

@@ -6,7 +6,7 @@ void loadAssets();
 
 uint8_t getTileAddress(const char c);
 
-void drawTile(uint8_t gridSize, uint8_t x, uint8_t y, uint8_t value);
+void drawTile(const uint8_t gridSize, const uint8_t x, const uint8_t y, const uint8_t value);
 
 void showStartScreen();
 
