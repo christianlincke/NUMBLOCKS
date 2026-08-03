@@ -33,3 +33,10 @@ void renderer_startGameOverAnimation(Renderer *renderer);
 void renderMenu(Menu *menu, uint8_t x, uint8_t y);
 
 void renderScore(uint16_t score);
+
+/**
+ * @brief print how many cells are checked during each move. for debug / optim
+ * 
+ * @param checks 
+ */
+void renderChecks(uint16_t checks);

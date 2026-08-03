@@ -120,3 +120,11 @@ void renderScore(uint16_t score)
     scoreString[sizeof(scoreString) - 1] = '\0';
     printString(0, 17, scoreString);
 }
+
+void renderChecks(uint16_t checks)
+{
+    char checkString[18];
+    sprintf(checkString, "ChecKs: %d", checks);
+    checkString[sizeof(checkString) - 1] = '\0';
+    printString(0, 0, checkString);
+}

@@ -40,6 +40,10 @@ typedef struct
     MoveData moveData;
     MoveFrame *frame;
     uint8_t size;
+    uint8_t rowsActive; // keep track if there is anything in a row / columns, if not we can skip it
+    uint8_t columnsActive;
+
+    uint16_t checks; // debug / optim
 } Grid;
 
 void moveData_clear(MoveData *moveData);

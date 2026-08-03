@@ -113,12 +113,14 @@ uint16_t runGame(const uint8_t gridSize)
         {
             gameOver = grid_checkGameOver(&grid);
         }
+        // TODO gameover animation, wait till animation is done, then wait until stasrt is pressen and return
 
         prevMove = moveActive;
 
         // renderer_update(&renderer);
         renderer_draw(&renderer);
         renderScore(grid_calcScore(&grid));
+        renderChecks(grid.checks);
 
 #ifdef TARGET_GB
         vsync();

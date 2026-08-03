@@ -13,8 +13,8 @@ typedef struct
 static const DirectionVector directions[] = {
     [MOVE_UP] = {0, -1}, [MOVE_DOWN] = {0, 1}, [MOVE_LEFT] = {-1, 0}, [MOVE_RIGHT] = {1, 0}};
 
-
-void moveData_clear(MoveData *moveData) {
+void moveData_clear(MoveData *moveData)
+{
 
     moveData->moveDir = MOVE_NONE;
 
@@ -33,6 +33,8 @@ void grid_init(Grid *grid, MoveFrame *frame, uint8_t gridSize)
 {
     grid->frame = frame;
     grid->size = gridSize;
+    grid->rowsActive = 0;
+    grid->columnsActive = 0;
     moveData_clear(&grid->moveData);
     for (int y = 0; y < grid->size; y++)
     {
@@ -74,6 +76,8 @@ void grid_prepare(Grid *grid, MoveDirection moveDir)
     grid->moveData.startY = dy > 0 ? (grid->size - 2) : dy < 0 ? 1 : 0;
     grid->moveData.endY = dy > 0 ? -1 : dy < 0 ? grid->size : grid->size;
     grid->moveData.stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
+
+    grid->checks = 0; // debug / optim
 }
 
 MoveDirection grid_move(Grid *grid)
@@ -81,40 +85,63 @@ MoveDirection grid_move(Grid *grid)
     // clear moveFrame
     moveFrame_clear(grid->frame);
 
+    MoveData *move = &grid->moveData;
+
+    int8_t dx = move->dx;
+    int8_t dy = move->dy;
+    int8_t stepX = move->stepX;
+    int8_t stepY = move->stepY;
+    int8_t endX = move->endX;
+    int8_t endY = move->endY;
+
     uint8_t moved = 0;
 
     int8_t y = grid->moveData.startY;
-    while (y != grid->moveData.endY)
+    while (y != endY)
     {
         int8_t x = grid->moveData.startX;
-        while (x != grid->moveData.endX)
+        while (x != endX)
         {
-            // call neighbouring cell coordinates
-            uint8_t nx = x + grid->moveData.dx;
-            uint8_t ny = y + grid->moveData.dy;
+            grid->checks++; // debug / optim
 
-            if (grid->cells[ny][nx] == 0 && grid->cells[y][x] != 0)
+            // call neighbouring cell coordinates
+            uint8_t nx = x + dx;
+            uint8_t ny = y + dy;
+
+            uint8_t *cell = &grid->cells[y][x];
+            uint8_t *next = &grid->cells[ny][nx];
+
+            if (*next == 0 && *cell != 0)
             {
                 // CORE CODE
-                grid->cells[ny][nx] = grid->cells[y][x];
+                *next = *cell;
+                *cell = 0;
 
                 // grid->aux[ny][nx] = grid->aux[y][x];
-                grid->aux[ny] |= (grid->aux[y] & (0x80 >> x)) >> grid->moveData.dx;
+                if (dx >= 0)
+                {
+                    grid->aux[ny] |= (grid->aux[y] & 0x80 >> x) >> dx;
+                }
+                else if (dx < 0)
+                {
+                    grid->aux[ny] |= (grid->aux[y] & 0x80 >> x) << 1;
+                }
 
-                grid->cells[y][x] = 0;
-                // grid->aux[y][x] = 0;
-                grid->aux[y] &= ~(0x80 >> x);
+                grid->aux[y] &= ~0x80 >> x; // grid->aux[y][x] = 0;
 
-                // NEW CODE
-                grid->frame->moves[y][x] |= (grid->moveData.dx >> 6) | grid->moveData.dx;
-                grid->frame->moves[y][x] |= (grid->moveData.dy >> 4) | (grid->moveData.dy << 2);
+                // flag the row and column as active
+                grid->columnsActive |= 0x80 >> nx;
+                grid->rowsActive |= 0x80 >> ny;
+
+                // moveframe
+                grid->frame->moves[y][x] |= (dx >> 6) | dx;
+                grid->frame->moves[y][x] |= (dy >> 4) | (dy << 2);
                 grid->frame->moves[y][x] &= 0x0F;
-                grid->frame->moveActive = grid->moveData.moveDir;
+                grid->frame->moveActive = move->moveDir;
 
                 moved = 1;
             }
-            else if (grid->cells[ny][nx] != 0 && grid->cells[ny][nx] == grid->cells[y][x] &&
-                     !(grid->aux[ny] & (0x80 >> nx)) &&
+            else if (*next != 0 && *next == *cell && !(grid->aux[ny] & (0x80 >> nx)) &&
                      !(grid->aux[y] & (0x80 >> x))) // !grid->aux[ny][nx] && !grid->aux[y][x]
             {
                 // if the neighbouring cell isnt empty AND neighbouring cell is same value as
@@ -122,28 +149,35 @@ MoveDirection grid_move(Grid *grid)
                 // += 1
 
                 // CORE CODE
-                grid->cells[ny][nx] += 1;
-                grid->aux[ny] |= 0x80 >> nx; // grid->aux[ny][nx] = 1;
-                grid->cells[y][x] = 0;
+                *next += 1;
+                *cell = 0;
 
-                // NEW CODE
+                // flag neighbour cell as merged
+                grid->aux[ny] |= 0x80 >> nx; // grid->aux[ny][nx] = 1;
+
+                // flag the row and column as active
+                grid->columnsActive |= 0x80 >> nx;
+                grid->rowsActive |= 0x80 >> ny;
+
+                // moveframe
                 grid->frame->moves[y][x] &= 0xCF;
                 grid->frame->moves[nx][ny] &= 0x3F;
-
-                grid->frame->moves[y][x] |= (grid->moveData.dx >> 6) | grid->moveData.dx;
-                grid->frame->moves[y][x] |= (grid->moveData.dy >> 4) | (grid->moveData.dy << 2);
-                grid->frame->moveActive = grid->moveData.moveDir;
+                grid->frame->moves[y][x] |= (dx >> 6) | dx;
+                grid->frame->moves[y][x] |= (dy >> 4) | (dy << 2);
+                grid->frame->moveActive = move->moveDir;
 
                 moved = 1;
             }
-            x += grid->moveData.stepX;
+            x += stepX;
         }
-        y += grid->moveData.stepY;
+        y += stepY;
     }
-    if (moved) {
-        return grid->moveData.moveDir;
+    if (moved)
+    {
+        return move->moveDir;
     }
-    else {
+    else
+    {
         return MOVE_NONE;
     }
 }
@@ -161,10 +195,10 @@ uint16_t grid_calcScore(const Grid *grid)
     {
         for (uint8_t x = 0; x < grid->size; x++)
         {
-            if (grid->cells[y][x] > 0) {
+            if (grid->cells[y][x] > 0)
+            {
                 sum += 1 << grid->cells[y][x];
             }
-            
         }
     }
     return sum;
@@ -205,6 +239,8 @@ void grid_newCell(Grid *grid, const uint8_t numNewCells)
             if (grid->cells[y][x] == 0)
             {
                 grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
+                grid->columnsActive |= 0x80 >> x;
+                grid->rowsActive |= 0x80 >> y;
                 break;
             }
             grid->aux[y] |= 0xA0 >> x;
