@@ -27,6 +27,9 @@ typedef struct
     uint8_t animationFrame;
     uint8_t animationLength;
 
+    uint8_t gameOverFrameIndex;
+    uint8_t gameOverTileIndex;
+
 } Renderer;
 
 

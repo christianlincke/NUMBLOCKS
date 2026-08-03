@@ -31,13 +31,13 @@ void startScreen()
 uint16_t runGame(const uint8_t gridSize)
 {
     // init grid, MoveFrame and Renderer
-    static MoveFrame moveFrame;
+    MoveFrame moveFrame;
     moveFrame_init(&moveFrame, gridSize);
 
-    static Grid grid;
+    Grid grid;
     grid_init(&grid, &moveFrame, gridSize);
 
-    static Renderer renderer;
+    Renderer renderer;
     renderer_init(&renderer, &grid, &moveFrame);
     renderer_takeSnapshot(&renderer);
     renderer_drawAll(&renderer);

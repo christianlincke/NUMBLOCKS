@@ -16,6 +16,9 @@ void renderer_init(Renderer *renderer, Grid *grid, MoveFrame *frame)
     renderer->animationLength = 2;
     renderer->animating = 0;
 
+    renderer->gameOverFrameIndex = 0;
+    renderer->gameOverTileIndex = 0;
+
     clearScreen();
     showBackground();
 }
@@ -88,11 +91,8 @@ void renderer_drawDiff(Renderer *renderer)
 
 void renderer_updateGameOverAnimation(Renderer *renderer)
 {
-    static uint8_t gameOverFrameIdx = 0;
-    static uint8_t letterTileIndex = 0;
-
-    uint8_t x = gameOverFrameIdx % renderer->size;
-    uint8_t y = (uint8_t)gameOverFrameIdx / renderer->size;
+    uint8_t x = renderer->gameOverFrameIndex % renderer->size;
+    uint8_t y = (uint8_t)renderer->gameOverFrameIndex / renderer->size;
 
     uint8_t startX = (uint8_t)(renderer->size - 4) / 2;
     uint8_t endX = startX + 3;
@@ -101,21 +101,21 @@ void renderer_updateGameOverAnimation(Renderer *renderer)
 
     if (x >= startX && x <= endX && y == startY)
     {
-        renderer->snapshotGrid[y][x] = letterTileIndex + 16;
-        letterTileIndex++;
+        renderer->snapshotGrid[y][x] = renderer->gameOverTileIndex + 16;
+        renderer->gameOverTileIndex++;
     }
     else if (x >= startX && x <= endX && y == endY)
     {
-        renderer->snapshotGrid[y][x] = letterTileIndex + 16;
-        letterTileIndex++;
+        renderer->snapshotGrid[y][x] = renderer->gameOverTileIndex + 16;
+        renderer->gameOverTileIndex++;
     }
     else
     {
         renderer->snapshotGrid[y][x] = 0;
     }
-    gameOverFrameIdx++;
+    renderer->gameOverFrameIndex++;
 
-    if (gameOverFrameIdx == renderer->size * renderer->size)
+    if (renderer->gameOverFrameIndex == renderer->size * renderer->size)
     {
         renderer->animating = 0;
     }
