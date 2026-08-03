@@ -193,9 +193,9 @@ MoveDirection grid_move(Grid *grid)
 uint16_t grid_calcScore(const Grid *grid)
 {
     uint16_t sum = 0;
-    for (uint8_t y = 0; y < grid->size; y++)
-    {
-        for (uint8_t x = 0; x < grid->size; x++)
+    uint8_t gridSize = grid->size;
+    for (uint8_t y = 0; y < gridSize; y++)
+        for (uint8_t x = 0; x < gridSize; x++)
         {
             if (grid->cells[y][x] > 0)
             {
@@ -215,9 +215,10 @@ uint16_t grid_calcScore(const Grid *grid)
 uint8_t grid_sumAux(Grid *grid)
 {
     uint8_t sum = 0;
-    for (uint8_t y = 0; y < grid->size; y++)
+    uint8_t gridSize = grid->size;
+    for (uint8_t y = 0; y < gridSize; y++)
     {
-        for (uint8_t x = 0; x < grid->size; x++)
+        for (uint8_t x = 0; x < gridSize; x++)
         {
             sum += ((grid->aux[y] >> x) & 0xA0) >> 8;
         }
@@ -229,18 +230,20 @@ void grid_newCell(Grid *grid, const uint8_t numNewCells)
 {
     // reset the grid.aux[]
     grid_resetAux(grid);
+    static const uint8_t maxVal[] = {2,2,3,3,3}; // maximum size of new cell
+    uint8_t gridSize = grid->size;
 
     for (uint8_t i = 0; i < numNewCells; i++)
     {
 
-        while (grid_sumAux(grid) < (grid->size * grid->size))
+        while (grid_sumAux(grid) < (gridSize * gridSize))
         {
-            uint8_t x = (uint8_t)(random_byte() % grid->size);
-            uint8_t y = (uint8_t)(random_byte() % grid->size);
+            uint8_t x = (uint8_t)(random_byte() % gridSize);
+            uint8_t y = (uint8_t)(random_byte() % gridSize);
 
             if (grid->cells[y][x] == 0)
             {
-                grid->cells[y][x] = (uint8_t)((random_byte() % 2) + 1);
+                grid->cells[y][x] = (uint8_t)((random_byte() % maxVal[gridSize-4]) + 1);
                 grid->columnsActive |= 0x80 >> x;
                 grid->rowsActive |= 0x80 >> y;
                 break;

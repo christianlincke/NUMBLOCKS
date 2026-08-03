@@ -37,7 +37,7 @@ void showScores(Scores scores)
 {
     waitpadup();
     clearScreen();
-    const char* categories[] = {"4x4", "5x5", "6x6", "7x7", "8x8"};
+    const char *categories[] = {"4x4", "5x5", "6x6", "7x7", "8x8"};
 
     for (uint8_t i = 0; i < 5; i++)
     {
@@ -51,7 +51,8 @@ void showScores(Scores scores)
     while (1)
     {
         j = joypadDebounce(&jMem);
-        if (j & J_START  || j || j & J_B) {
+        if (j & J_START || j || j & J_B)
+        {
             return;
         }
 #ifdef TARGET_GB
@@ -85,13 +86,13 @@ uint16_t runGame(const uint8_t gridSize)
 
     uint8_t j = 0;
     uint8_t jMem = 0;
-
     uint8_t moveActive = 0;
     uint8_t prevMove = 0;
-
+    uint8_t newCell = 0;
     uint8_t gameOver = 0;
-
     int timeStamp = 0;
+    static const uint8_t numNewCells[5] = {1,1,1,2,2};
+    renderScore(grid_calcScore(&grid));
 
     while (1)
     {
@@ -157,8 +158,9 @@ uint16_t runGame(const uint8_t gridSize)
         {
             renderer_takeSnapshot(&renderer);
             moveFrame_clear(&moveFrame);
-            grid_newCell(&grid, 1);
+            grid_newCell(&grid, numNewCells[gridSize - 4]);
             moveActive = 0;
+            newCell = 1;
             renderer_startAnimation(&renderer, ANIMATION_NEWCELL);
         }
 
@@ -172,7 +174,15 @@ uint16_t runGame(const uint8_t gridSize)
 
         renderer_update(&renderer); // r.a = 0 if animation done
         renderer_drawDiff(&renderer);
-        renderScore(grid_calcScore(&grid));
+
+        // TODO only calc score once when move is finished and we have a new tile
+        // takes up much more processing power than i expected
+        // also, the sprintf() inside renderScore call uses CPU, maybe replace?
+        if (newCell && !renderer.animating)
+        {
+            renderScore(grid_calcScore(&grid));
+            newCell = 0;
+        }
 
         // for debug / optim
         // renderTimestamp(timeStamp);
