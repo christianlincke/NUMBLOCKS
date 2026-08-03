@@ -25,8 +25,9 @@ void renderer_takeSnapshot(Renderer *renderer)
     memcpy(renderer->snapshotGrid, renderer->grid->cells, 64);
 }
 
-void renderer_startAnimation(Renderer *renderer)
+void renderer_startAnimation(Renderer *renderer, Animation animation)
 {
+    renderer->animation = animation;
     renderer->animationFrame = 0;
     renderer->animationLength = 2;
     renderer->animating = 1;
@@ -41,7 +42,15 @@ void renderer_update(Renderer *renderer)
 
     if (renderer->animationFrame >= renderer->animationLength)
     {
-        renderer->animating = 0;
+        if (renderer->animation == ANIMATION_GAMEOVER)
+        {
+            renderer->animationFrame = 0;
+            renderer_updateGameOverAnimation(renderer);
+        }
+        else
+        {
+            renderer->animating = 0;
+        }
     }
 }
 
@@ -64,39 +73,52 @@ void renderer_drawDiff(Renderer *renderer)
         {
             if (renderer->snapshotGrid[y][x] != renderer->grid->cells[y][x])
             {
-                drawTile(renderer->size, x, y, renderer->grid->cells[y][x]);
+                if (renderer->animation != ANIMATION_GAMEOVER)
+                {
+                    drawTile(renderer->size, x, y, renderer->grid->cells[y][x]);
+                }
+                else
+                {
+                    drawTile(renderer->size, x, y, renderer->snapshotGrid[y][x]);
+                }
             }
         }
     }
 }
 
-void renderGameOverAnimation(Renderer *renderer)
+void renderer_updateGameOverAnimation(Renderer *renderer)
 {
-    moveFrame_clear(renderer->frame);
-    renderer->grid->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)(renderer->size - 4) / 2] =
-        16; // G
-    renderer->grid
-        ->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)1 + (renderer->size - 4) / 2] = 17; // A
-    renderer->grid
-        ->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)2 + (renderer->size - 4) / 2] = 18; // M
-    renderer->grid
-        ->cells[(uint8_t)(renderer->size - 2) / 2][(uint8_t)3 + (renderer->size - 4) / 2] = 19; // A
+    static uint8_t gameOverFrameIdx = 0;
+    static uint8_t letterTileIndex = 0;
 
-    renderer->grid
-        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)(renderer->size - 4) / 2] = 20; // O
-    renderer->grid
-        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)1 + (renderer->size - 4) / 2] =
-        21; // V
-    renderer->grid
-        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)2 + (renderer->size - 4) / 2] =
-        22; // E
-    renderer->grid
-        ->cells[(uint8_t)1 + (renderer->size - 2) / 2][(uint8_t)3 + (renderer->size - 4) / 2] =
-        23; // R
+    uint8_t x = gameOverFrameIdx % renderer->size;
+    uint8_t y = (uint8_t)gameOverFrameIdx / renderer->size;
 
-    renderer->animationFrame = 0;
-    renderer->animationLength = 2;
-    renderer->animating = 1;
+    uint8_t startX = (uint8_t)(renderer->size - 4) / 2;
+    uint8_t endX = startX + 3;
+    uint8_t startY = (uint8_t)(renderer->size - 2) / 2;
+    uint8_t endY = startY + 1;
+
+    if (x >= startX && x <= endX && y == startY)
+    {
+        renderer->snapshotGrid[y][x] = letterTileIndex + 16;
+        letterTileIndex++;
+    }
+    else if (x >= startX && x <= endX && y == endY)
+    {
+        renderer->snapshotGrid[y][x] = letterTileIndex + 16;
+        letterTileIndex++;
+    }
+    else
+    {
+        renderer->snapshotGrid[y][x] = 0;
+    }
+    gameOverFrameIdx++;
+
+    if (gameOverFrameIdx == renderer->size * renderer->size)
+    {
+        renderer->animating = 0;
+    }
 }
 
 void renderMenu(Menu *menu, uint8_t x, uint8_t y)

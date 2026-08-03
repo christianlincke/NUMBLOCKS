@@ -8,6 +8,7 @@ void main(void)
     loadAssets();
 
     while(1){
+        clearScreen();
         uint8_t gridSize = mainMenu();
         uint16_t score = runGame(gridSize);
     }

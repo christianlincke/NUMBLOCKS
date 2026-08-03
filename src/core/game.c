@@ -89,7 +89,7 @@ uint16_t runGame(const uint8_t gridSize)
             moveActive = MOVE_RIGHT;
             grid_prepare(&grid, MOVE_RIGHT);
         }
-        else if (j & J_START && !renderer.animating)
+        else if (j & J_START && !renderer.animating && !moveActive && !gameOver)
         {
             uint8_t cont = gameMenu();
             if (!cont)
@@ -104,33 +104,42 @@ uint16_t runGame(const uint8_t gridSize)
         }
 
         // move the cell
-        if (moveActive && !renderer.animating)
+        if (moveActive && !renderer.animating && !gameOver)
         {
             
             timeStamp = sys_time;
             renderer_takeSnapshot(&renderer);
-            moveActive = grid_move(&grid); // first round: p = 0, mA = 1
+            moveActive = grid_move(&grid);
             timeStamp = sys_time - timeStamp;
             if (moveActive) {
-                renderer_startAnimation(&renderer); // r.a = 1
+                renderer_startAnimation(&renderer, ANIMATION_MOVE);
             }
         }
-        else if (!renderer.animating) {
+        else if (!renderer.animating && !gameOver) {
             prevMove = moveActive;
         }
 
-        if (prevMove && !moveActive && !renderer.animating)
+        if (prevMove && !moveActive && !renderer.animating && !gameOver)
         {
             renderer_takeSnapshot(&renderer);
             moveFrame_clear(&moveFrame);
             grid_newCell(&grid, 1);
             moveActive = 0;
-            // renderer_startAnimation(&renderer);
+            renderer_startAnimation(&renderer, ANIMATION_NEWCELL);
+        }
+
+        // check game over
+        if(!moveActive && !gameOver && grid_checkGameOver(&grid) && !renderer.animating) {
+            gameOver = 1;
+            renderer_takeSnapshot(&renderer);
+            renderer_startAnimation(&renderer, ANIMATION_GAMEOVER);
         }
         
         renderer_update(&renderer); // r.a = 0 if animation done
         renderer_drawDiff(&renderer);
         renderScore(grid_calcScore(&grid));
+
+        // for debug / optim
         renderTimestamp(timeStamp);
 
 #ifdef TARGET_GB
