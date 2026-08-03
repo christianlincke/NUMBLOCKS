@@ -12,7 +12,9 @@ endif
 LCC = $(GBDK_HOME)/bin/lcc
 
 # include headers in /src
-LCCFLAGS += -Isrc -Ires -DTARGET_GB
+LCCFLAGS += -Isrc -Ires -DTARGET_GB 
+LCCFLAGS += -Wl-yt0x1B # Set an MBC for banking (1B-ROM+MBC5+RAM+BATT)
+LCCFLAGS += -Wm-yoA -Wm-ya1 # set auto bank size and 8kb of SRAM
 CLIFLAGS += -DTARGET_CLI
 
 

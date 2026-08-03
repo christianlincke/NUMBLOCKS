@@ -1,9 +1,10 @@
 #include "game.h"
 
-#ifdef TARGET_GB
+// #ifdef TARGET_GB
 #include <gb/gb.h>
+#include <gbdk/platform.h>
 #include <rand.h>
-#endif
+// #endif
 
 #ifdef TARGET_CLI
 #include <unistd.h>
@@ -15,6 +16,10 @@
 #include "core/menu.h"
 #include "core/render.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 void startScreen()
 {
     showStartScreen();
@@ -22,6 +27,33 @@ void startScreen()
 
     while (!(joypadDebounce(&jMem) & J_START))
     {
+#ifdef TARGET_GB
+        vsync();
+#endif
+    }
+}
+
+void showScores(Scores scores)
+{
+    waitpadup();
+    clearScreen();
+    const char* categories[] = {"4x4", "5x5", "6x6", "7x7", "8x8"};
+
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        char scoreString[12];
+        sprintf(scoreString, "%s: %d", categories[i], scores.scores[i]);
+        scoreString[sizeof(scoreString) - 1] = '\0';
+        printString(6, 7 + i, scoreString);
+    }
+    uint8_t jMem = 0;
+    uint8_t j = 0;
+    while (1)
+    {
+        j = joypadDebounce(&jMem);
+        if (j & J_START  || j || j & J_B) {
+            return;
+        }
 #ifdef TARGET_GB
         vsync();
 #endif

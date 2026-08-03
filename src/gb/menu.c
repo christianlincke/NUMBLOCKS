@@ -9,14 +9,14 @@ uint8_t mainMenu()
 {
     waitpadup();
 
-    const char *mainOptions[] = {"4x4", "5x5", "6x6", "7x7", "8x8"};
+    const char *mainOptions[] = {"4x4", "5x5", "6x6", "7x7", "8x8", "SCORES"};
 
-    uint8_t mainValues[] = {4, 5, 6, 7, 8};
+    uint8_t mainValues[] = {4, 5, 6, 7, 8, 1};
 
     Menu menu = {
         .options = mainOptions,
         .values = mainValues,
-        .count = 5,
+        .count = 6,
         .index = 0};
 
     uint8_t j = 0;

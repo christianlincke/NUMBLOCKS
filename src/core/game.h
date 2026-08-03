@@ -1,8 +1,12 @@
 #pragma once
 
+#include "core/score.h"
+
 #include <stdint.h>
 
 void startScreen();
+
+void showScores(Scores scores);
 
 uint8_t mainMenu();
 
