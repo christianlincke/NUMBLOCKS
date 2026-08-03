@@ -39,6 +39,8 @@ uint16_t runGame(const uint8_t gridSize)
 
     static Renderer renderer;
     renderer_init(&renderer, &grid, &moveFrame);
+    renderer_takeSnapshot(&renderer);
+    renderer_drawAll(&renderer);
 
     // init random
 #ifdef TARGET_GB
@@ -47,7 +49,7 @@ uint16_t runGame(const uint8_t gridSize)
 
     // spawn two cells
     grid_newCell(&grid, 2);
-    renderer_draw(&renderer);
+    renderer_drawDiff(&renderer);
 
     uint8_t j = 0;
     uint8_t jMem = 0;
@@ -57,10 +59,14 @@ uint16_t runGame(const uint8_t gridSize)
 
     uint8_t gameOver = 0;
 
+    int timeStamp = 0;
+
     while (1)
     {
         // get input
         j = joypadDebounce(&jMem);
+
+        prevMove = moveActive;
 
         // set currMove and prepeare grid
         if (j & J_UP && !renderer.animating && !moveActive && !gameOver)
@@ -90,6 +96,7 @@ uint16_t runGame(const uint8_t gridSize)
             {
                 return grid_calcScore(&grid);
             }
+            renderer_drawAll(&renderer);
         }
         else if (j & J_START && !renderer.animating && gameOver)
         {
@@ -99,28 +106,32 @@ uint16_t runGame(const uint8_t gridSize)
         // move the cell
         if (moveActive && !renderer.animating)
         {
-            moveActive = grid_move(&grid);
+            
+            timeStamp = sys_time;
+            renderer_takeSnapshot(&renderer);
+            moveActive = grid_move(&grid); // first round: p = 0, mA = 1
+            timeStamp = sys_time - timeStamp;
+            if (moveActive) {
+                renderer_startAnimation(&renderer); // r.a = 1
+            }
+        }
+        else if (!renderer.animating) {
+            prevMove = moveActive;
         }
 
         if (prevMove && !moveActive && !renderer.animating)
         {
+            renderer_takeSnapshot(&renderer);
             moveFrame_clear(&moveFrame);
             grid_newCell(&grid, 1);
             moveActive = 0;
+            // renderer_startAnimation(&renderer);
         }
-
-        if (!moveActive && !gameOver && !renderer.animating)
-        {
-            gameOver = grid_checkGameOver(&grid);
-        }
-        // TODO gameover animation, wait till animation is done, then wait until stasrt is pressen and return
-
-        prevMove = moveActive;
-
-        // renderer_update(&renderer);
-        renderer_draw(&renderer);
+        
+        renderer_update(&renderer); // r.a = 0 if animation done
+        renderer_drawDiff(&renderer);
         renderScore(grid_calcScore(&grid));
-        renderChecks(grid.checks);
+        renderTimestamp(timeStamp);
 
 #ifdef TARGET_GB
         vsync();

@@ -77,11 +77,13 @@ void grid_prepare(Grid *grid, MoveDirection moveDir)
     grid->moveData.endY = dy > 0 ? -1 : dy < 0 ? grid->size : grid->size;
     grid->moveData.stepY = dy > 0 ? -1 : dy < 0 ? 1 : 1;
 
-    grid->checks = 0; // debug / optim
+    
 }
 
 MoveDirection grid_move(Grid *grid)
 {
+    grid->checks = 0; // debug / optim
+    
     // clear moveFrame
     moveFrame_clear(grid->frame);
 
@@ -141,7 +143,7 @@ MoveDirection grid_move(Grid *grid)
 
                 moved = 1;
             }
-            else if (*next != 0 && *next == *cell && !(grid->aux[ny] & (0x80 >> nx)) &&
+            else if (*next != 0 && *next == *cell && !(grid->aux[ny] & (0x80 >> nx))  &&
                      !(grid->aux[y] & (0x80 >> x))) // !grid->aux[ny][nx] && !grid->aux[y][x]
             {
                 // if the neighbouring cell isnt empty AND neighbouring cell is same value as

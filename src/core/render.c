@@ -20,6 +20,11 @@ void renderer_init(Renderer *renderer, Grid *grid, MoveFrame *frame)
     showBackground();
 }
 
+void renderer_takeSnapshot(Renderer *renderer)
+{
+    memcpy(renderer->snapshotGrid, renderer->grid->cells, 64);
+}
+
 void renderer_startAnimation(Renderer *renderer)
 {
     renderer->animationFrame = 0;
@@ -40,24 +45,27 @@ void renderer_update(Renderer *renderer)
     }
 }
 
-void renderer_draw(Renderer *renderer)
+void renderer_drawAll(Renderer *renderer)
 {
     for (int y = 0; y < renderer->size; y++)
     {
         for (int x = 0; x < renderer->size; x++)
         {
-            // int drawX = x;
-            // int drawY = y;
-
-            // TileMove *tile = &renderer->frame.moves[y][x];
-            // if (renderer->animating)
-            // {
-            //     drawX += tile->dx * renderer->animationFrame;
-            //     drawY += tile->dy * renderer->animationFrame;
-            // }
-
-            // drawTile(renderer->size, drawX, drawY, renderer->frame.cells[y][x]);
             drawTile(renderer->size, x, y, renderer->grid->cells[y][x]);
+        }
+    }
+}
+
+void renderer_drawDiff(Renderer *renderer)
+{
+    for (int y = 0; y < renderer->size; y++)
+    {
+        for (int x = 0; x < renderer->size; x++)
+        {
+            if (renderer->snapshotGrid[y][x] != renderer->grid->cells[y][x])
+            {
+                drawTile(renderer->size, x, y, renderer->grid->cells[y][x]);
+            }
         }
     }
 }
@@ -121,10 +129,10 @@ void renderScore(uint16_t score)
     printString(0, 17, scoreString);
 }
 
-void renderChecks(uint16_t checks)
+void renderTimestamp(uint16_t timestamp)
 {
     char checkString[18];
-    sprintf(checkString, "ChecKs: %d", checks);
+    sprintf(checkString, "Time: %d", timestamp);
     checkString[sizeof(checkString) - 1] = '\0';
     printString(0, 0, checkString);
 }

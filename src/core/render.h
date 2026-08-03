@@ -22,11 +22,15 @@ typedef struct
 
 void renderer_init(Renderer *renderer, Grid *grid, MoveFrame *frame);
 
+void renderer_takeSnapshot(Renderer *renderer);
+
 void renderer_startAnimation(Renderer *renderer);
 
 void renderer_update(Renderer *renderer);
 
-void renderer_draw(Renderer *renderer);
+void renderer_drawAll(Renderer *renderer);
+
+void renderer_drawDiff(Renderer *renderer);
 
 void renderer_startGameOverAnimation(Renderer *renderer);
 
@@ -39,4 +43,4 @@ void renderScore(uint16_t score);
  * 
  * @param checks 
  */
-void renderChecks(uint16_t checks);
+void renderTimestamp(uint16_t timestamp);
