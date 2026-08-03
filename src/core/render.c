@@ -70,15 +70,17 @@ void renderer_drawAll(Renderer *renderer)
 
 void renderer_drawDiff(Renderer *renderer)
 {
-    for (int y = 0; y < renderer->size; y++)
+    Grid *grid = renderer->grid;
+    uint8_t gridSize = renderer->size;
+    for (uint8_t y = 0; y < gridSize; y++)
     {
-        for (int x = 0; x < renderer->size; x++)
+        for (uint8_t x = 0; x < gridSize; x++)
         {
-            if (renderer->snapshotGrid[y][x] != renderer->grid->cells[y][x])
+            if (renderer->snapshotGrid[y][x] != grid->cells[y][x])
             {
                 if (renderer->animation != ANIMATION_GAMEOVER)
                 {
-                    drawTile(renderer->size, x, y, renderer->grid->cells[y][x]);
+                    drawTile(renderer->size, x, y, grid->cells[y][x]);
                 }
                 else
                 {

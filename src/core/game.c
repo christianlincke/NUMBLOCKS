@@ -138,16 +138,18 @@ uint16_t runGame(const uint8_t gridSize)
         // move the cell
         if (moveActive && !renderer.animating && !gameOver)
         {
-            
-            timeStamp = sys_time;
+
+            // timeStamp = sys_time;
             renderer_takeSnapshot(&renderer);
             moveActive = grid_move(&grid);
-            timeStamp = sys_time - timeStamp;
-            if (moveActive) {
+            // timeStamp = sys_time - timeStamp;
+            if (moveActive)
+            {
                 renderer_startAnimation(&renderer, ANIMATION_MOVE);
             }
         }
-        else if (!renderer.animating && !gameOver) {
+        else if (!renderer.animating && !gameOver)
+        {
             prevMove = moveActive;
         }
 
@@ -161,18 +163,19 @@ uint16_t runGame(const uint8_t gridSize)
         }
 
         // check game over
-        if(!moveActive && !gameOver && grid_checkGameOver(&grid) && !renderer.animating) {
+        if (!moveActive && !gameOver && grid_checkGameOver(&grid) && !renderer.animating)
+        {
             gameOver = 1;
             renderer_takeSnapshot(&renderer);
             renderer_startAnimation(&renderer, ANIMATION_GAMEOVER);
         }
-        
+
         renderer_update(&renderer); // r.a = 0 if animation done
         renderer_drawDiff(&renderer);
         renderScore(grid_calcScore(&grid));
 
         // for debug / optim
-        renderTimestamp(timeStamp);
+        // renderTimestamp(timeStamp);
 
 #ifdef TARGET_GB
         vsync();
