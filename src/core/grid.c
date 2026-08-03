@@ -253,7 +253,6 @@ void grid_newCell(Grid *grid, const uint8_t numNewCells)
 
 uint8_t grid_checkGameOver(Grid *grid)
 {
-    return 1;
     for (uint8_t y = 0; y < grid->size; y++)
     {
         for (uint8_t x = 0; x < grid->size; x++)
