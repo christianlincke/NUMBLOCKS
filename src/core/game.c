@@ -92,7 +92,7 @@ uint16_t runGame(const uint8_t gridSize)
     uint8_t gameOver = 0;
     int timeStamp = 0;
     static const uint8_t numNewCells[5] = {1,1,1,2,2};
-    renderScore(grid_calcScore(&grid));
+    renderScore(grid_calcScore(&grid), gridSize);
 
     while (1)
     {
@@ -180,7 +180,7 @@ uint16_t runGame(const uint8_t gridSize)
         // also, the sprintf() inside renderScore call uses CPU, maybe replace?
         if (newCell && !renderer.animating)
         {
-            renderScore(grid_calcScore(&grid));
+            renderScore(grid_calcScore(&grid), gridSize);
             newCell = 0;
         }
 
