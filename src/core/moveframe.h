@@ -22,13 +22,14 @@ typedef enum {
     MOVE_RIGHT = 4
 } MoveDirection;
 
+#define CELL_MERGE 0xF0
+
 /**
  * @brief encoded data for tile, containing dx, dy and merge
  * 0bMMMMYYXX
  * MMMM is MERGE
  * 0000 for no merge
- * 0011 (hex 3) for merge into
- * 1100 (hex C) for tile that moves and then merges into other tile
+ * 1111 (hex F) for merge into
  * YY is dY, XX is dX
  * 00 for 0
  * 10 for -1

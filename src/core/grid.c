@@ -162,8 +162,7 @@ MoveDirection grid_move(Grid *grid)
                 grid->rowsActive |= 0x80 >> ny;
 
                 // moveframe
-                grid->frame->moves[y][x] &= 0xCF;
-                grid->frame->moves[nx][ny] &= 0x3F;
+                grid->frame->moves[nx][ny] |= CELL_MERGE;
                 grid->frame->moves[y][x] |= (dx >> 6) | dx;
                 grid->frame->moves[y][x] |= (dy >> 4) | (dy << 2);
                 grid->frame->moveActive = move->moveDir;
@@ -195,6 +194,7 @@ uint16_t grid_calcScore(const Grid *grid)
     uint16_t sum = 0;
     uint8_t gridSize = grid->size;
     for (uint8_t y = 0; y < gridSize; y++)
+    {
         for (uint8_t x = 0; x < gridSize; x++)
         {
             if (grid->cells[y][x] > 0)
