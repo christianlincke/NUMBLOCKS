@@ -145,12 +145,14 @@ void renderMenu(Menu *menu, uint8_t x, uint8_t y)
     }
 }
 
-void renderScore(uint16_t score)
+void renderScore(uint16_t score, uint8_t gridSize)
 {
+    uint8_t startX = (20 - 2 * gridSize) / 2;
+    uint8_t startY = (uint8_t)(18 - 2 * gridSize) / 4;
     char scoreString[18];
     sprintf(scoreString, "Score: %d", score);
     scoreString[sizeof(scoreString) - 1] = '\0';
-    printString(0, 17, scoreString);
+    printString(startX, startY, scoreString);
 }
 
 void renderTimestamp(uint16_t timestamp)

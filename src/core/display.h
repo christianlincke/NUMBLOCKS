@@ -14,6 +14,4 @@ void clearScreen();
 
 void showBackground();
 
-void renderScore(uint16_t score);
-
 void printString(uint8_t x, uint8_t y, const char *text);

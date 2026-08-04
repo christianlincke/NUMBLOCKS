@@ -49,7 +49,7 @@ void renderer_updateGameOverAnimation(Renderer *renderer);
 
 void renderMenu(Menu *menu, uint8_t x, uint8_t y);
 
-void renderScore(uint16_t score);
+void renderScore(uint16_t score, uint8_t gridSize);
 
 /**
  * @brief print how many cells are checked during each move. for debug / optim
