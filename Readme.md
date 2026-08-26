@@ -1,5 +1,19 @@
 
-A 2048 style game for Game Boy \
+## A simple 2048 style game for Game Boy
+![Alt Text](numblocks_demo.gif)
 
-to build, run "make rom" 
+Project to learn writing C and using [GBDK](https://gbdk.org/)
 
+## Setup
+Download or clone this repository and place it next to the gbdk folder, e.g.:
+```
+.
+└── GB_PROJECTS/
+    ├── gbdk
+    └── NUMBLOCKS
+```
+
+to build, run:
+```
+make rom
+```
