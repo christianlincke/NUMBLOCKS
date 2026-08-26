@@ -1,10 +1,10 @@
 #include "game.h"
 
-// #ifdef TARGET_GB
+#ifdef TARGET_GB
 #include <gb/gb.h>
 #include <gbdk/platform.h>
 #include <rand.h>
-// #endif
+#endif
 
 #ifdef TARGET_CLI
 #include <unistd.h>
@@ -22,20 +22,27 @@
 
 void startScreen()
 {
+#ifdef TARGET_GB
     showStartScreen();
     uint8_t jMem = 0;
 
     while (!(joypadDebounce(&jMem) & J_START))
     {
-#ifdef TARGET_GB
+
         vsync();
-#endif
     }
+#endif
+
+#ifdef TARGET_CLI
+    return;
+#endif
 }
 
 void showScores(Scores scores)
 {
+#ifdef TARGET_GB
     waitpadup();
+#endif
     clearScreen();
     const char *categories[] = {"4x4", "5x5", "6x6", "7x7", "8x8"};
 
@@ -90,8 +97,7 @@ uint16_t runGame(const uint8_t gridSize)
     uint8_t prevMove = 0;
     uint8_t newCell = 0;
     uint8_t gameOver = 0;
-    int timeStamp = 0;
-    static const uint8_t numNewCells[5] = {1,1,1,2,2};
+    static const uint8_t numNewCells[5] = {1, 1, 1, 2, 2};
     renderScore(grid_calcScore(&grid), gridSize);
 
     while (1)
@@ -101,7 +107,6 @@ uint16_t runGame(const uint8_t gridSize)
 
         prevMove = moveActive;
 
-        // set currMove and prepeare grid
         if (j & J_UP && !renderer.animating && !moveActive && !gameOver)
         {
             moveActive = MOVE_UP;
@@ -139,11 +144,8 @@ uint16_t runGame(const uint8_t gridSize)
         // move the cell
         if (moveActive && !renderer.animating && !gameOver)
         {
-
-            // timeStamp = sys_time;
             renderer_takeSnapshot(&renderer);
             moveActive = grid_move(&grid);
-            // timeStamp = sys_time - timeStamp;
             if (moveActive)
             {
                 renderer_startAnimation(&renderer, ANIMATION_MOVE);
@@ -172,20 +174,14 @@ uint16_t runGame(const uint8_t gridSize)
             renderer_startAnimation(&renderer, ANIMATION_GAMEOVER);
         }
 
-        renderer_update(&renderer); // r.a = 0 if animation done
+        renderer_update(&renderer);
         renderer_drawDiff(&renderer);
 
-        // TODO only calc score once when move is finished and we have a new tile
-        // takes up much more processing power than i expected
-        // also, the sprintf() inside renderScore call uses CPU, maybe replace?
         if (newCell && !renderer.animating)
         {
             renderScore(grid_calcScore(&grid), gridSize);
             newCell = 0;
         }
-
-        // for debug / optim
-        // renderTimestamp(timeStamp);
 
 #ifdef TARGET_GB
         vsync();
